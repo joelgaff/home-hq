@@ -1,0 +1,22 @@
+<%# Week mode: a rolling seven days from the selected date. Tap a column (or +N more) for that
+    day in Today mode. %>
+<div class="week">
+  <% (0..6).each do |i| %>
+    <% d = date + i %>
+    <% all_day = @household.all_day_events_on(d).to_a %>
+    <% timed = @household.timed_events_on(d).to_a %>
+    <% max = 7 - all_day.size %>
+    <% more = timed.size - max %>
+    <div class="wk-col<%= " is-today" if d == now.to_date %>" data-day="<%= d.iso8601 %>">
+      <%= link_to calendar_path(mode: "day", date: d), class: "wk-head" do %><b><%= fmt_day_short(d) %></b><span class="num"><%= d.day %></span><% end %>
+      <% all_day.each do |e| %>
+        <button class="wk-ad" data-ev="<%= e.id %>" style="<%= e.color_person.style %>"><%= e.title %></button>
+      <% end %>
+      <% timed.first(max).each do |e| %>
+        <button class="wk-ev<%= " is-past" if e.past?(now) %>" data-ev="<%= e.id %>" style="<%= e.color_person.style %>"><span class="wk-t"><%= fmt_time(e.starts_at, ampm: false) %></span><span class="wk-n"><%= e.title %></span></button>
+      <% end %>
+      <% if more > 0 %><%= link_to "+#{more} more", calendar_path(mode: "day", date: d), class: "wk-more" %><% end %>
+      <% if timed.empty? && all_day.empty? %><div class="wk-free serif"><i>Free</i></div><% end %>
+    </div>
+  <% end %>
+</div>

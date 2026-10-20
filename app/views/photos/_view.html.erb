@@ -1,0 +1,24 @@
+<%# Photos (ui-spec §1.5): full-bleed slideshow; tap zones (prev / loud captions / next),
+    layout toggle, favourite. Runs only while the view shows. %>
+<% household = Current.household %>
+<div class="photos" data-controller="photos" data-photos-slideshow-outlet=".ph-stage" data-photos-url-value="<%= photo_path(":id") %>">
+  <div class="ph-stage" data-controller="slideshow" data-slideshow-layout-value="auto" data-slideshow-interval-value="15000"
+       data-slideshow-photos-value="<%= household.slideshow_pool.map(&:as_slide).to_json %>"
+       data-action="view:show@document->slideshow#resume view:hide@document->slideshow#pause slideshow:change->photos#changed"></div>
+  <button class="ph-zone ph-zone--l" data-action="click->photos#prev" aria-label="Previous"></button>
+  <button class="ph-zone ph-zone--c" data-action="click->photos#loud" aria-label="Show details"></button>
+  <button class="ph-zone ph-zone--r" data-action="click->photos#next" aria-label="Next"></button>
+  <div class="ph-top">
+    <%# Phone (the approved mockup): Photos is full screen, reached from the Today tile; back to Today. %>
+    <% unless frame_layout? %><button class="ph-back" data-go="home" aria-label="Back to Today"><%= icon("left", 26) %></button><% end %>
+    <div class="seg seg--glass">
+    <% [ %w[auto Auto], %w[cover Cover], %w[pair Pair], %w[collage Collage], %w[polaroid Polaroid] ].each do |key, label| %>
+      <button data-layout="<%= key %>" class="<%= "is-on" if key == "auto" %>" data-action="click->photos#layout"><%= label %></button>
+    <% end %>
+  </div></div>
+  <div class="ph-bottom">
+    <button class="ph-btn" data-action="click->photos#prev"><%= icon("left", 30) %></button>
+    <button class="ph-btn ph-btn--fav" data-photos-target="fav" data-action="click->photos#fav"><%= icon("heart", 30) %><span>Favourite</span></button>
+    <button class="ph-btn" data-action="click->photos#next"><%= icon("right", 30) %></button>
+  </div>
+</div>

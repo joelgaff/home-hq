@@ -1,0 +1,7 @@
+main:
+  household: primary
+  current_temperature: 20.5
+  target_temperature: 21.5
+  mode: heat
+  humidity: 42
+  outside_temperature: 14

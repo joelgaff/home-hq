@@ -1,0 +1,15 @@
+<%# Home control (ui-spec §1.6): summary + scenes + rooms on the left, climate / cameras / now
+    playing on the right. Every piece has a stable id so a write patches only what it touched. %>
+<div class="hc" data-controller="control" data-control-devices-url-value="<%= devices_path %>"
+     data-action="shell:second@document->control#second view:show@document->control#shown">
+  <div class="hc-left">
+    <%= render "control/summary" %>
+    <%= render "control/scenes" %>
+    <%= render "control/rooms" %>
+  </div>
+  <div class="hc-right">
+    <%= render "control/climate" %>
+    <%= render "control/cams" %>
+    <%= render "control/media" %>
+  </div>
+</div>

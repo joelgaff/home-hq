@@ -1,0 +1,37 @@
+<%# The whole calendar is one Turbo Frame: every header link and day tap re-renders it in place.
+    Client state (scroll, swipe, the now-line) lives in the calendar controller. `person` is the
+    phone's chip filter (nil = Everyone) and travels with every link. %>
+<% person = local_assigns[:person] %>
+<% now = Current.now %>
+<% t = calendar_title(mode, date, now) %>
+<% is_today = calendar_is_today?(mode, date, now) %>
+<%= turbo_frame_tag "calendar", data: { controller: "calendar", calendar_mode_value: mode, mode: mode, date: date.iso8601, person: person&.id, calendar_prev_value: calendar_url(mode, calendar_nav_date(mode, date, -1), person),
+      calendar_next_value: calendar_url(mode, calendar_nav_date(mode, date, 1), person), action: "shell:minute@document->calendar#minute turbo:frame-render->calendar#rendered view:show@document->calendar#shown" } do %>
+  <div class="cal cal--<%= mode %>">
+    <header class="cal-head">
+      <%= link_to icon("left", 24), calendar_url(mode, calendar_nav_date(mode, date, -1), person), class: "icon-btn", data: { nav: -1 }, "aria-label": "Previous" %>
+      <div class="cal-title"><div class="serif"><%= t[:title] %></div><div class="label"><%= t[:kicker] %></div><% Current.household.calendar_sources.enabled.each do |source| %><% case source.staleness(now) %><% when :unreadable %><div class="label cal-stale"><%= source.name %> can’t be read</div><% when :late %><div class="label cal-stale"><%= source.name %> not updated since <%= fmt_time(source.synced_at.in_time_zone(Current.household.time_zone)) %></div><% end %><% end %></div>
+      <%= link_to icon("right", 24), calendar_url(mode, calendar_nav_date(mode, date, 1), person), class: "icon-btn", data: { nav: 1 }, "aria-label": "Next" %>
+      <%= link_to "Today", calendar_url(mode, (mode == "month" ? now.to_date.beginning_of_month : now.to_date), person), class: [ "btn", "btn--ghost", ("is-hidden" if is_today) ].compact.join(" "), data: { today: true } %>
+      <div class="seg">
+        <% calendar_modes.each do |m, label| %>
+          <%= link_to label, calendar_url(m, (m == "month" ? date.beginning_of_month : date), person), class: (mode == m ? "is-on" : ""), data: { mode: m } %>
+        <% end %>
+      </div>
+      <%# Adding events is off for now (plan: Simplifications); the button stays, hidden. %>
+      <button class="fab is-hidden" data-add aria-label="Add event"><%= icon("plus", 26) %></button>
+    </header>
+    <% unless frame_layout? %>
+      <div class="cal-chips">
+        <%= link_to calendar_url(mode, date, nil), class: [ "chip", ("is-on" unless person) ].compact.join(" "), style: @household.family.style do %><%= avatar(@household.family, 28) %>Everyone<% end %>
+        <% @household.people.each do |p| %>
+          <%= link_to calendar_url(mode, date, p), class: [ "chip", ("is-on" if person == p) ].compact.join(" "), style: p.style do %><%= avatar(p, 28) %><%= p.name %><% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="cal-body">
+      <% body = { "3day" => "three_day", "day" => (frame_layout? ? "day" : "one_day") }.fetch(mode, mode) %>
+      <%= render "calendar/#{body}", date: date, now: now, person: person %>
+    </div>
+  </div>
+<% end %>

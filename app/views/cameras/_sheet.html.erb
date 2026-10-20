@@ -1,0 +1,8 @@
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body" data-sheet-class="sheet--cam">
+    <div class="cam-big">
+      <img src="<%= @camera.snapshot_url(1200, 750) %>" alt=""<%= " data-live" if @camera.mapped? %>>
+      <div class="cam-big-bar"><span class="tk-live"><i></i><%= @camera.name %></span><span class="label label--light">Snapshot · <span data-control-target="age">4s ago</span></span></div>
+    </div>
+  </div>
+<% end %>

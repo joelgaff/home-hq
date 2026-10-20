@@ -1,0 +1,8 @@
+<% content_for(:title, "People · Settings") %>
+<%= render "settings/header", title: "People", add_path: new_settings_person_path %>
+<ul class="settings-list">
+  <% @people.each do |p| %>
+    <%= render "settings/row", title: p.name, sub: [ (p.kid? ? "Kid" : "Adult"), (p.email || "no login") ].join(" · "), style: p.style, initial: p.initial,
+          edit_path: edit_settings_person_path(p), move_path: move_settings_person_path(p), delete_path: settings_person_path(p) %>
+  <% end %>
+</ul>

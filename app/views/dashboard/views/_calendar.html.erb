@@ -1,0 +1,4 @@
+<section class="view" id="view-calendar" data-view="calendar">
+  <%# The frame opens on Today mode (ui-spec §1.2); a phone on the agenda (the approved mockup). %>
+  <%= render "calendar/calendar", mode: (frame_layout? ? "day" : "agenda"), date: Current.now.to_date, person: nil %>
+</section>

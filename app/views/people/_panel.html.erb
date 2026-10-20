@@ -1,0 +1,14 @@
+<%# One person's page on a phone (the approved mockup): presence line, what needs them next, a
+    kid's rings, to-dos, the next seven days, their chores today. %>
+<% kicker = [ fmt_day(now), person.status.presence, ("ETA #{person.eta_minutes} min" if person.eta?) ].compact.join(" · ") %>
+<section class="me-panel<%= " is-picked" if picked %>" data-lane="<%= person.id %>" style="<%= person.style %>">
+  <div class="me-title">
+    <div class="me-kicker label"><%= kicker %></div>
+    <h1 class="me-name serif"><%= person.name %></h1>
+  </div>
+  <%= render "people/needs", person: person, now: now %>
+  <% if person.kid? %><%= render "people/rings", person: person, now: now %><% end %>
+  <%= render "people/todos", person: person %>
+  <%= render "people/schedule", person: person, now: now %>
+  <%= render "people/chores_list", person: person %>
+</section>

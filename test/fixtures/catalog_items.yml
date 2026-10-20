@@ -1,0 +1,12 @@
+<% [["Apples", "produce", true], ["Avocados", "produce", false], ["Bananas", "produce", true], ["Baby spinach", "produce", true],
+    ["Blueberries", "produce", false], ["Bread", "bakery", true], ["Bagels", "bakery", false], ["Butter", "dairy", true],
+    ["Eggs", "dairy", true], ["Milk 2%", "dairy", true], ["Oat milk", "dairy", false], ["Olive oil", "pantry", false],
+    ["Peanut butter", "pantry", false], ["Paper towels", "household_goods", true], ["Dish soap", "household_goods", false],
+    ["Chicken thighs", "meat", true], ["Chicken breasts", "meat", false]].each_with_index do |(name, cat, usual), i| %>
+<%= name.parameterize.underscore %>:
+  household: primary
+  category: <%= cat %>
+  name: <%= name %>
+  usual: <%= usual %>
+  position: <%= i + 1 %>
+<% end %>

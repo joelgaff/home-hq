@@ -1,0 +1,64 @@
+# Times are UTC; the primary household's zone is UTC in tests.
+piano:
+  household: primary
+  title: Piano lesson
+  starts_at: 2026-10-14 15:45:00
+  ends_at: 2026-10-14 16:30:00
+  all_day: false
+  location: Ms. Park's Studio
+  travel_minutes: 12
+  notes: Bring the blue theory book.
+
+soccer:
+  household: primary
+  title: Soccer practice
+  starts_at: 2026-10-14 16:30:00
+  ends_at: 2026-10-14 18:00:00
+  all_day: false
+  location: Lakeshore Fields
+  travel_minutes: 20
+
+dentist:
+  household: primary
+  title: Dentist
+  starts_at: 2026-10-14 12:00:00
+  ends_at: 2026-10-14 12:45:00
+  all_day: false
+  travel_minutes: 15
+
+dinner:
+  household: primary
+  title: Dinner at Nonna's
+  starts_at: 2026-10-14 18:30:00
+  ends_at: 2026-10-14 19:30:00
+  all_day: false
+  travel_minutes: 20
+
+pajama_day:
+  household: primary
+  title: Pajama Day at school
+  starts_at: 2026-10-14 00:00:00
+  ends_at: 2026-10-15 00:00:00
+  all_day: true
+
+montreal:
+  household: primary
+  title: Wes in Montréal
+  starts_at: 2026-10-15 00:00:00
+  ends_at: 2026-10-18 00:00:00
+  all_day: true
+
+gym_tomorrow:
+  household: primary
+  title: Gym
+  starts_at: 2026-10-15 07:00:00
+  ends_at: 2026-10-15 07:45:00
+  all_day: false
+
+plumber:
+  household: primary
+  title: Plumber window
+  starts_at: 2026-10-14 10:00:00
+  ends_at: 2026-10-14 11:00:00
+  all_day: false
+  demo_set: busy

@@ -1,0 +1,14 @@
+<%# Usuals (tap to add), and what is on the list for the suggestions to annotate. %>
+<% household = Current.household %>
+<% on_list = household.grocery_items.open.to_h { |g| [ g.name, g.quantity ] } %>
+<%= turbo_frame_tag "shopping-side", data: { on_list: on_list.to_json, suggest_target: "usuals" } do %>
+  <div class="label">Usuals · tap to add</div>
+  <div class="s-usuals">
+    <% household.usuals.each do |u| %>
+      <% qty = on_list[u.name] %>
+      <button class="s-tile<%= " is-on" if qty %>" data-add="<%= u.name %>">
+        <b><%= u.name %></b><span><% if qty %><%= icon("check", 16) %>On list<%= " ×#{qty}" if qty > 1 %><% else %><%= u.category&.name || "Other" %><% end %></span>
+      </button>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,32 @@
+<%# Getting started: the setup steps in the order that works, each with its status. Folds to one
+    line once the essentials are done. %>
+<% steps = @household.setup_steps %>
+<% complete = steps.all?(&:done?) %>
+<% paths = { "people" => settings_people_path, "routines" => settings_routines_path, "chores" => new_settings_chore_path, "calendars" => settings_calendar_sources_path,
+             "stores" => settings_stores_path, "pins" => settings_people_path, "screen" => screens_path } %>
+<% hints = { "people" => "Add each person; an email is their login, kids earn stars.", "routines" => "Morning, after school, evening: the blocks chores live in.",
+             "chores" => "Each chore goes in a routine, for a person or anyone.", "calendars" => "A shared calendar's secret iCal address; names in titles pick the person.",
+             "stores" => "The shops, with their aisle order.", "pins" => "An adult's PIN unlocks doors from the frame.", "screen" => "Enrol the wall frame once." } %>
+<section class="setup<%= " is-complete" if complete %>">
+  <h2 class="serif settings-h2">Getting started</h2>
+  <% if complete %>
+    <p class="page-note">All set: people, routines, chores, calendars, stores, PINs and the screen are in.</p>
+  <% else %>
+    <p class="page-note">In this order; chores need a routine to live in.</p>
+    <ol class="setup-steps">
+      <% steps.each do |step| %>
+        <li class="setup-step <%= step.done? ? "is-done" : (step.blocked? ? "is-blocked" : "is-todo") %>" data-step="<%= step.key %>">
+          <span class="setup-mark"><%= step.done? ? "✓" : (step.blocked? ? "·" : "○") %></span>
+          <span class="setup-name"><%= step.name %></span>
+          <% if step.blocked? %>
+            <small>Add a routine first · <%= link_to "Routines", settings_routines_path %></small>
+          <% elsif step.done? %>
+            <small><%= link_to "Edit", paths[step.key] %></small>
+          <% else %>
+            <small><%= hints[step.key] %> <%= link_to "Add", paths[step.key] %></small>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+</section>

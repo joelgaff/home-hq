@@ -1,0 +1,56 @@
+<%# Takeovers and banners (ui-spec §1.9), as templates the alerts controller clones when an
+    alert arrives (from the demo drawer now, from Home Assistant later). %>
+<% household = Current.household %>
+<% front_door = household.devices.locks.first %>
+<% porch_camera = household.cameras.first %>
+<% garage = household.garage %>
+<div class="takeover" id="takeover" role="alertdialog" data-controller="alerts" data-action="demo:alert@document->alerts#show house:alert@document->alerts#show"
+     data-alerts-garage-url-value="<%= garage ? device_path(garage) : "" %>" data-alerts-garage-sheet-value="<%= garage ? garage_device_path(garage) : "" %>"
+     data-alerts-camera-url-value="<%= porch_camera ? camera_path(porch_camera) : "" %>">
+  <div data-alerts-target="body"></div>
+
+  <template data-alerts-target="doorbell">
+    <div class="takeover--door">
+      <div class="tk-cam"><img src="<%= porch_camera ? porch_camera.snapshot_url(1280, 800) : "" %>" alt=""><span class="tk-live"><i></i>LIVE · <%= porch_camera&.name || "Front door" %></span></div>
+      <div class="tk-door">
+        <div class="label label--light"><%= icon("bell", 20) %> Doorbell · <span data-alerts-time></span></div>
+        <h1 class="serif tk-title">Someone’s at<br>the front door</h1>
+        <div class="tk-actions">
+          <button class="tk-btn" data-talk data-action="click->alerts#talk"><%= icon("mic", 30) %><span>Talk</span></button>
+          <button class="tk-btn tk-btn--hold" data-unlock data-controller="hold" data-hold-ms-value="1000" data-device-url="<%= front_door ? device_path(front_door) : "" %>"
+                  data-action="hold:done->alerts#unlock hold:cancel->alerts#unlockHint"><%= icon("unlock", 30) %><span>Hold to unlock</span></button>
+          <button class="tk-btn tk-btn--solid" data-dismiss data-action="click->alerts#close"><%= icon("x", 30) %><span>Dismiss</span></button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template data-alerts-target="leak">
+    <div class="takeover--alarm">
+      <div class="tk-alarm">
+        <div class="tk-alarm-icon"><%= icon("drop", 88) %></div>
+        <div class="label label--light">Critical alert · <span data-alerts-time></span></div>
+        <h1 class="tk-huge">Water leak</h1>
+        <p class="tk-sub">Laundry room sensor detected water on the floor.</p>
+        <div class="tk-actions">
+          <button class="tk-btn tk-btn--hold tk-btn--light" data-valve data-controller="hold" data-hold-ms-value="1200"
+                  data-action="hold:done->alerts#valve hold:cancel->alerts#valveHint"><%= icon("drop", 30) %><span>Hold to shut off water</span></button>
+          <button class="tk-btn tk-btn--solid tk-btn--light" data-ack data-action="click->alerts#acknowledge"><%= icon("check", 30) %><span>Acknowledge</span></button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template data-alerts-target="garage">
+    <div class="banner banner--amber"><%= icon("garage", 30) %><div class="banner-text"><b>Garage open for 15 min</b><span>No one is in the garage · <%= household.people.first&.name || "Someone" %> is 12 min away</span></div><button class="banner-btn banner-btn--solid" data-act>Close garage</button><button class="banner-btn" data-x>Leave open</button></div>
+  </template>
+
+  <template data-alerts-target="package">
+    <div class="banner banner--ink"><%= icon("box", 30) %><div class="banner-text"><b>Package delivered</b><span>Front porch · <span data-alerts-time></span></span></div><button class="banner-btn banner-btn--solid" data-act>View camera</button><button class="banner-btn" data-x>OK</button></div>
+  </template>
+
+  <template data-alerts-target="toastUnlocked"><%= render "toasts/toast", html: "Front door unlocked · relocks in 2 min", icon: "unlock" %></template>
+  <template data-alerts-target="toastKeepHolding"><%= render "toasts/toast", html: "Keep holding to unlock", icon: "lock", ms: 2000 %></template>
+  <template data-alerts-target="toastKeepHoldingValve"><%= render "toasts/toast", html: "Keep holding to shut off the water main", icon: "drop", ms: 2000 %></template>
+  <template data-alerts-target="toastAcknowledged"><%= render "toasts/toast", html: "Leak acknowledged by the kitchen display", icon: "check" %></template>
+</div>

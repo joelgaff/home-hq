@@ -1,0 +1,5 @@
+<div class="hours">
+  <% (CalendarHelper::START_HOUR..CalendarHelper::END_HOUR).each do |h| %>
+    <div class="hr" style="top:<%= (h - CalendarHelper::START_HOUR) * CalendarHelper::PX %>px"><span><%= hour_label(h) %></span></div>
+  <% end %>
+</div>

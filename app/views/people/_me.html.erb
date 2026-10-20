@@ -1,0 +1,28 @@
+<%# "Me" (the approved phone mockup): opens on the signed-in person, the others one tap away.
+    Each person's panel is rendered; the picker shows one. To-dos come with milestone 8. %>
+<% household = Current.household %>
+<% people = household.people.to_a %>
+<% picked = current_user&.person || people.first %>
+<% now = Current.now %>
+<div class="me" data-controller="picker" data-picker-allow-all-value="false" data-action="click->picker#pick">
+  <div class="me-head">
+    <a class="icon-btn me-back" data-go="home" aria-label="Back to Today"><%= icon("left", 24) %></a>
+    <div class="me-picks">
+      <% people.each do |p| %>
+        <button class="me-pick<%= " is-on" if p == picked %>" data-pick="<%= p.id %>" aria-label="<%= p.name %>" style="<%= p.style %>"><%= avatar(p, 44) %></button>
+      <% end %>
+    </div>
+  </div>
+  <div class="me-lanes" data-picker-target="lanes" data-picked="<%= picked&.id %>">
+    <% people.each do |p| %>
+      <%= render "people/panel", person: p, picked: p == picked, now: now %>
+    <% end %>
+  </div>
+  <div class="me-foot">
+    <span class="label">Signed in as <%= current_user.email %></span>
+    <div class="me-foot-actions">
+      <%= link_to "Settings", settings_path, class: "btn btn--ghost", data: { turbo: false } %>
+      <%= button_to "Sign out", session_path, method: :delete, class: "btn btn--ghost", form: { data: { turbo: false } } %>
+    </div>
+  </div>
+</div>

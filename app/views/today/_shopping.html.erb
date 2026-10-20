@@ -1,0 +1,10 @@
+<% open = @household.grocery_items.open.in_order.to_a %>
+<%= turbo_frame_tag "today-shopping", class: "h-shop card", data: { go: "shopping" } do %>
+  <div class="label">Shopping</div>
+  <div class="h-stat"><span class="num"><%= open.size %></span><small>items to get</small></div>
+  <ul class="h-recent">
+    <% open.last(3).reverse.each do |g| %>
+      <li><i></i><%= g.name %></li>
+    <% end %>
+  </ul>
+<% end %>

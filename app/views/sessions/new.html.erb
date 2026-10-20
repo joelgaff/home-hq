@@ -1,0 +1,6 @@
+<h1 class="serif">Sign in</h1>
+<p class="page-note">Your email address, and we send you a six-digit code. No password.</p>
+<%= form_with url: session_path, method: :post, class: "page-form", data: { turbo: false } do |f| %>
+  <%= f.email_field :email, placeholder: "you@example.com", required: true, autofocus: true, autocomplete: "email", class: "page-input", "aria-label": "Email" %>
+  <%= f.submit "Email me a code", class: "btn btn--solid" %>
+<% end %>

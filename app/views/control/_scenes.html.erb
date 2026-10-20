@@ -1,0 +1,8 @@
+<% household = Current.household %>
+<div class="hc-scenes" id="control-scenes">
+  <% household.scenes.each do |scene| %>
+    <%= button_to scene_activations_path, params: { scene_id: scene.id }, class: "scene#{' is-on' if household.active_scene == scene}", form: { data: { turbo_stream: true }, class: "scene-form" } do %>
+      <%= icon(scene.icon, 26) %><span><%= scene.name %></span>
+    <% end %>
+  <% end %>
+</div>

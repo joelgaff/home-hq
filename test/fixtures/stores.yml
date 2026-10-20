@@ -1,0 +1,9 @@
+grocer:
+  household: primary
+  name: FreshCo
+  position: 1
+
+costco:
+  household: primary
+  name: Costco
+  position: 2

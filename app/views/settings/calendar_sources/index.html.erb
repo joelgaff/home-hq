@@ -1,0 +1,26 @@
+<% content_for(:title, "Calendars · Settings") %>
+<div class="settings-head">
+  <div><p class="page-note"><%= link_to "← Settings", settings_path %></p><h1 class="serif">Calendars</h1></div>
+  <%= link_to "Add a calendar", new_settings_calendar_source_path, class: "btn btn--solid" %>
+</div>
+<p class="page-note">Read-only feeds (a Google calendar's secret iCal address, HEY, Outlook, a school calendar). Events are for the people named in their titles, else the calendar's people, else everyone.</p>
+<% if @sources.any? %>
+  <ul>
+    <% @sources.each do |source| %>
+      <li class="settings-item">
+        <div class="settings-text">
+          <b><%= source.name %></b>
+          <small><%= source.people.any? ? source.people.map(&:name).join(", ") : "Everyone" %> ·
+            <% if !source.enabled? %>off<% elsif source.synced_at.nil? %>not synced yet<% else %><%= source.events.count %> events · synced <%= time_ago_in_words(source.synced_at) %> ago<% end %><% if source.last_error.present? %> · <span class="settings-error">last error: <%= source.last_error %></span><% end %></small>
+        </div>
+        <div class="settings-actions">
+          <%= button_to "Sync now", sync_settings_calendar_source_path(source), method: :post, class: "settings-btn", form: { data: { turbo: false } } %>
+          <%= link_to "Edit", edit_settings_calendar_source_path(source), class: "settings-btn" %>
+          <%= button_to "Remove", settings_calendar_source_path(source), method: :delete, class: "settings-btn settings-btn--danger", form: { data: { turbo_confirm: "Remove #{source.name} and its events?" } } %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No calendars yet.</p>
+<% end %>

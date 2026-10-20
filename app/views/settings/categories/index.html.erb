@@ -1,0 +1,8 @@
+<% content_for(:title, "Categories · Settings") %>
+<%= render "settings/header", title: "Categories", add_path: new_settings_category_path %>
+<p class="page-note">This is the "All stores" order; each store has its own aisle order.</p>
+<ul class="settings-list">
+  <% @categories.each do |c| %>
+    <%= render "settings/row", title: c.name, sub: "#{c.catalog_items.size} in the catalogue", edit_path: edit_settings_category_path(c), move_path: move_settings_category_path(c), delete_path: settings_category_path(c) %>
+  <% end %>
+</ul>

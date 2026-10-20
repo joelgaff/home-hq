@@ -1,0 +1,23 @@
+#!/bin/sh
+# Kamal post-deploy hook: tells Grateful Deploy (the local Kamal dashboard at
+# http://127.0.0.1:3100) about this deploy, so its history and rollback list
+# include deploys made from a terminal or CI. Grateful Deploy ignores reports of
+# its own deploys. Does nothing on a machine without Grateful Deploy's token
+# file, and never fails the deploy.
+#
+# Canonical copy: grateful-deploy's config/kamal_hooks/post-deploy.
+token_file="${GRATEFUL_DEPLOY_HOOK_TOKEN_FILE:-$HOME/.config/grateful-deploy/hook_token}"
+[ -r "$token_file" ] || exit 0
+
+# The token goes on stdin (-H @-), so it never shows in the process list.
+if ! printf 'Authorization: Bearer %s\n' "$(cat "$token_file")" |
+  curl -fsS --max-time 3 -o /dev/null -H @- \
+    --data-urlencode "service=$KAMAL_SERVICE" \
+    --data-urlencode "destination=$KAMAL_DESTINATION" \
+    --data-urlencode "version=$KAMAL_VERSION" \
+    --data-urlencode "command=$KAMAL_COMMAND" \
+    --data-urlencode "runtime=$KAMAL_RUNTIME" \
+    "${GRATEFUL_DEPLOY_URL:-http://127.0.0.1:3100}/kamal_hooks/post_deploy"; then
+  echo "Grateful Deploy didn't record this deploy (curl says why, above). The deploy itself is fine." >&2
+fi
+exit 0

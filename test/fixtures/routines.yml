@@ -1,0 +1,23 @@
+morning:
+  household: primary
+  name: Morning
+  range_label: 6 – 11 AM
+  from_hour: 0
+  to_hour: 11
+  position: 1
+
+after_school:
+  household: primary
+  name: After school
+  range_label: 11 AM – 5 PM
+  from_hour: 11
+  to_hour: 17
+  position: 2
+
+evening:
+  household: primary
+  name: Evening
+  range_label: 5 – 10 PM
+  from_hour: 17
+  to_hour: 24
+  position: 3

@@ -1,0 +1,20 @@
+<% report = @household.latest_weather %>
+<%= turbo_frame_tag "today-weather", class: "h-weather", data: { controller: "refresh", refresh_every_value: "hour", refresh_url_value: today_path(part: "weather") } do %>
+  <% if report %>
+    <% w = report.outlook %>
+    <% hours = report.hourly(count: 7) %>
+    <% tmin, tmax = hours.map(&:temperature).minmax %>
+    <div class="h-wx-top">
+      <span class="h-wx-icon"><%= icon(w.condition, 60) %></span>
+      <span class="h-wx-temp num"><%= w.temperature %>°</span>
+      <span class="h-wx-meta"><b><%= w.label %></b><span>H <%= w.high %>°  L <%= w.low %>°</span><% if report.stale? %><span class="h-wx-stale">as of <%= fmt_time(report.fetched_at.in_time_zone(@household.time_zone)) %></span><% end %></span>
+    </div>
+    <div class="h-wx-say"><b><%= w.summary %>.</b> <%= w.advice %>.</div>
+    <div class="h-wx-hours">
+      <% hours.each do |h| %>
+        <% lift = tmax == tmin ? 0 : ((h.temperature - tmin).to_f / (tmax - tmin) * 8).round %>
+        <div class="h-hr<%= " is-wet" if h.wet? %>"><span class="h-hr-l"><%= h.label %></span><span class="h-hr-i" style="transform:translateY(<%= -lift %>px)"><%= icon(h.condition, 22) %></span><b><%= h.temperature %>°</b></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,19 @@
+kitchen:
+  household: primary
+  name: Kitchen
+  position: 1
+
+living:
+  household: primary
+  name: Living Room
+  position: 2
+
+entry:
+  household: primary
+  name: Entry + Garage
+  position: 3
+
+yard:
+  household: primary
+  name: Backyard
+  position: 4

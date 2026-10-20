@@ -1,0 +1,4 @@
+<% content_for(:title, "Add a room · Settings") %>
+<p class="page-note"><%= link_to "← Home", settings_home_path %></p>
+<h1 class="serif">Add a room</h1>
+<%= render "form", room: @room %>

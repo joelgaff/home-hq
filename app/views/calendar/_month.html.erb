@@ -1,0 +1,17 @@
+<%# Month mode: six weeks from the household's first day of the week, dots only; tap a day for Today mode. %>
+<% person = local_assigns[:person] %>
+<% first = date.beginning_of_month %>
+<% start = @household.beginning_of_week(first) %>
+<div class="month">
+  <div class="mo-dow"><% @household.week_day_names.each do |d| %><span class="label"><%= d %></span><% end %></div>
+  <div class="mo-grid">
+    <% 42.times do |i| %>
+      <% d = start + i %>
+      <% events = @household.all_day_events_on(d, person: person).to_a + @household.timed_events_on(d, person: person).to_a %>
+      <%= link_to calendar_url("day", d, person), class: [ "mo-cell", ("is-out" if d.month != first.month), ("is-today" if d == now.to_date) ].compact.join(" ") do %>
+        <span class="num"><%= d.day %></span>
+        <span class="mo-dots"><% events.first(5).each do |e| %><i style="<%= e.color_person.style %>"></i><% end %><% if events.size > 5 %><em>+<%= events.size - 5 %></em><% end %></span>
+      <% end %>
+    <% end %>
+  </div>
+</div>

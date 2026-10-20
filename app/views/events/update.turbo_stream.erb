@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "sheet" do %><%= render "events/sheet" %><% end %>
+<%# This page refetches the pieces it shows (no origin, so sync.js does not skip it). %>
+<turbo-stream action="pieces" targets="today-hero,today-lanes,today-agenda,calendar"><template></template></turbo-stream>

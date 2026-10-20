@@ -1,0 +1,7 @@
+<%= form_with model: [ :settings, camera ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: camera %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= render "settings/entity_field", f: f, entities: @entities, placeholder: "camera.doorbell" %>
+  <%= f.submit(camera.new_record? ? "Add camera" : "Save", class: "btn btn--solid") %>
+<% end %>

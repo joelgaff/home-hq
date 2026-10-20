@@ -1,0 +1,7 @@
+<%# Weekday checkboxes for a Scheduled record; none checked = every day. %>
+<div class="settings-days">
+  <% Scheduled::DAYS.each do |d| %>
+    <label class="settings-day"><%= check_box_tag "#{param}[weekdays][]", d, record.weekday_names.include?(d), id: "#{param}_weekdays_#{d}" %><span><%= d.capitalize %></span></label>
+  <% end %>
+  <small class="page-note">Nothing ticked = every day</small>
+</div>

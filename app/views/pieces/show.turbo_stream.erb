@@ -1,0 +1,5 @@
+<% @pieces.each do |id, partial, locals| %>
+  <%= turbo_stream.replace id do %>
+    <%= render partial, **locals %>
+  <% end %>
+<% end %>

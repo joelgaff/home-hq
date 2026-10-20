@@ -1,0 +1,31 @@
+<%# The PIN pad (plan: gap review): opens in the sheet; the tile shows its real state again. %>
+<%= turbo_stream.replace "sheet" do %>
+  <%= turbo_frame_tag "sheet" do %>
+    <div class="sheet-body sheet-pad pin-pad" data-sheet-class="" data-controller="pin">
+      <div class="label"><%= @device.name %></div>
+      <h2 class="serif sheet-h"><%= @device.garage_door? ? "Open the garage?" : "Unlock #{@device.name}?" %></h2>
+      <p class="sheet-p">An adult's PIN, please.</p>
+      <%= form_with url: device_path(@device), method: :patch, data: { turbo_stream: true, pin_target: "form" } do |f| %>
+        <% @patch.each { |k, v| %><%= hidden_field_tag k, v %><% } %>
+        <%= password_field_tag :pin, nil, class: "pin-field num", inputmode: "numeric", autocomplete: "one-time-code", maxlength: 8, data: { pin_target: "field" } %>
+        <% if @wrong %><p class="pin-error">That is not an adult's PIN.</p><% end %>
+        <div class="pin-keys">
+          <% %w[1 2 3 4 5 6 7 8 9 ⌫ 0 ✓].each do |k| %>
+            <button type="<%= k == "✓" ? "submit" : "button" %>" class="pin-key<%= " pin-key--go" if k == "✓" %>" data-action="click->pin#key" data-key="<%= k %>" aria-label="<%= { "⌫" => "Delete", "✓" => "Unlock" }.fetch(k, k) %>"><%= k %></button>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+<turbo-stream action="open_sheet"><template></template></turbo-stream>
+<% @devices.each do |device| %>
+  <%= turbo_stream.replace_all ".device-#{device.id}" do %>
+    <%= render "control/tile", device: device %>
+  <% end %>
+<% end %>
+<% if @wrong %>
+  <%= turbo_stream.update "toasts" do %>
+    <%= render "toasts/toast", html: "That is not an adult’s PIN", tone: "error", icon: "lock", ms: 2500 %>
+  <% end %>
+<% end %>

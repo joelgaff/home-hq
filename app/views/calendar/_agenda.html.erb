@@ -1,0 +1,35 @@
+<%# Agenda mode (the approved phone mockup): the day's all-day events as chips, then every timed
+    event in one list with a time gutter, past ones faded, the red now marker where the day is. %>
+<% timed = @household.timed_events_on(date, person: person).to_a %>
+<% all_day = @household.all_day_events_on(date, person: person).to_a %>
+<div class="cal-agenda">
+  <% if all_day.any? %>
+    <div class="ag-allday">
+      <% all_day.each do |e| %>
+        <button class="ad" data-ev="<%= e.id %>" style="<%= e.color_person.style %>"><%= e.title %></button>
+      <% end %>
+    </div>
+  <% end %>
+  <% if timed.empty? %>
+    <div class="cal-empty serif">Nothing on the calendar.<br><i>A rare, quiet day.</i></div>
+  <% else %>
+    <div class="ag-list">
+      <% marked = date != now.to_date %>
+      <% timed.each do |e| %>
+        <% if !marked && e.starts_at > now %>
+          <div class="ag-now"><span class="num"><%= fmt_time(now, ampm: false) %></span><i></i></div>
+          <% marked = true %>
+        <% end %>
+        <% others = e.family? ? [] : e.attending_people - [ e.color_person ] %>
+        <div class="ag-item<%= " is-past" if e.past?(now) %>">
+          <div class="ag-time num"><%= fmt_time(e.starts_at) %></div>
+          <button class="ag-row<%= " is-family" if e.family? %><%= " is-now" if e.current?(now) %>" data-ev="<%= e.id %>" style="<%= e.color_person.style %>">
+            <span class="ag-title"><%= e.title %></span>
+            <span class="ag-meta"><%= fmt_range(e.starts_at, e.ends_at) %><%= " · #{e.location}" if e.location.present? %><%= " · Leave #{fmt_time(e.leave_by, ampm: false)}" if e.travel? %><%= " · Everyone" if e.family? %><%= " · with #{others.map(&:name).join(' + ')}" if others.any? %></span>
+          </button>
+        </div>
+      <% end %>
+      <% unless marked %><div class="ag-now"><span class="num"><%= fmt_time(now, ampm: false) %></span><i></i></div><% end %>
+    </div>
+  <% end %>
+</div>

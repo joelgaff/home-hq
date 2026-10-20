@@ -1,0 +1,5 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+primary:
+  name: Primary Household
+  demo: true  # Wes's demo data, so the demo drawer is on (plan: milestone 3, second review)

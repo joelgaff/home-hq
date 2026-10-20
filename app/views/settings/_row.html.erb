@@ -1,0 +1,18 @@
+<%# One list row: title, sub, and the actions (edit, up, down, remove). %>
+<li class="settings-item">
+  <% if local_assigns[:style] %><span class="avatar" style="<%= style %>;width:36px;height:36px;font-size:16px"><%= local_assigns[:initial] %></span><% end %>
+  <div class="settings-text">
+    <b><%= title %></b>
+    <% if local_assigns[:sub].present? %><small><%= sub %></small><% end %>
+  </div>
+  <div class="settings-actions">
+    <% if local_assigns[:move_path] %>
+      <%= button_to "↑", move_path, method: :patch, params: { direction: "up" }, class: "settings-btn", "aria-label": "Move up", form: { data: { turbo: false } } %>
+      <%= button_to "↓", move_path, method: :patch, params: { direction: "down" }, class: "settings-btn", "aria-label": "Move down", form: { data: { turbo: false } } %>
+    <% end %>
+    <% if local_assigns[:edit_path] %><%= link_to "Edit", edit_path, class: "settings-btn" %><% end %>
+    <% if local_assigns[:delete_path] %>
+      <%= button_to "Remove", delete_path, method: :delete, class: "settings-btn settings-btn--danger", form: { data: { turbo_confirm: "Remove #{title}?" } } %>
+    <% end %>
+  </div>
+</li>

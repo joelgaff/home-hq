@@ -1,0 +1,8 @@
+<% content_for(:title, "Routines · Settings") %>
+<%= render "settings/header", title: "Routines", add_path: new_settings_routine_path %>
+<ul class="settings-list">
+  <% @routines.each do |r| %>
+    <%= render "settings/row", title: r.name, sub: [ r.range_label, (r.every_day? ? "every day" : r.weekday_names.map(&:capitalize).join(" ")), "#{r.chores.size} chores" ].join(" · "),
+          edit_path: edit_settings_routine_path(r), move_path: move_settings_routine_path(r), delete_path: settings_routine_path(r) %>
+  <% end %>
+</ul>

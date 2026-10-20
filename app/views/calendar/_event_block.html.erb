@@ -1,0 +1,18 @@
+<%# One timed event on the grid. lane: the person whose lane it sits in (others get dots);
+    half: sharing the width with another block. %>
+<% person = event.color_person %>
+<% family = event.family? %>
+<% minutes = event.duration_minutes %>
+<% people = event.attending_people %>
+<% others = lane ? people.reject { |p| p == lane } : (people.size > 1 && !family ? people : []) %>
+<% classes = [ "ev", ("is-past" if event.past?(now)), ("is-now" if event.current?(now)), ("is-short" if minutes < 45), ("is-family" if family), ("is-half" if half) ].compact %>
+<button class="<%= classes.join(" ") %>" data-ev="<%= event.id %>" style="<%= person.style %>;<%= style %>">
+  <% if event.travel? %><span class="ev-travel" style="height:<%= px(event.travel_minutes * CalendarHelper::PX / 60.0) %>"></span><% end %>
+  <span class="ev-title"><%= event.title %></span>
+  <span class="ev-meta"><%= fmt_range(event.starts_at, event.ends_at) %><% if event.travel? %> · <b><%= icon("car", 16) %>Leave <%= fmt_time(event.leave_by, ampm: false) %></b><% end %></span>
+  <% if family %>
+    <span class="ev-with"><%= dots(@household.people, 14) %></span>
+  <% elsif others.any? %>
+    <span class="ev-with"><%= dots(others, 14) %></span>
+  <% end %>
+</button>

@@ -1,0 +1,7 @@
+# Costco's aisle order: Household, Pantry, Snacks, Dairy & Eggs, Meat & Fish, Frozen, Produce, Bakery.
+<% %w[household_goods pantry snacks dairy meat frozen produce bakery].each_with_index do |cat, i| %>
+costco_<%= cat %>:
+  store: costco
+  category: <%= cat %>
+  position: <%= i + 1 %>
+<% end %>

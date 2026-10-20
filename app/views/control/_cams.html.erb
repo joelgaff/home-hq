@@ -1,0 +1,9 @@
+<div class="hc-cams" id="control-cams">
+  <div class="label">Cameras · snapshots every 20s</div>
+  <div class="cams">
+    <%# Real (mapped) cameras before demo ones; the first two fit the panel (ui-spec §1.6). %>
+    <% Current.household.cameras.sort_by { |c| [ c.mapped? ? 0 : 1, c.position, c.id ] }.first(2).each do |cam| %>
+      <button class="cam" data-cam="<%= cam.id %>" data-action="click->control#camera" data-url="<%= camera_path(cam) %>"><img src="<%= cam.snapshot_url %>" alt=""<%= " data-live" if cam.mapped? %>><span class="cam-name"><%= cam.name %></span><span class="cam-age" data-control-target="age">4s ago</span></button>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<%# Night (ui-spec §1.8): a dim red clock on black with tomorrow's first thing and the house's
+    security line, or, when the screen's night style is "off", just the black (port.css hides the
+    clock). Tap → nightdash (the whole UI through a red filter). %>
+<% now = Current.now %>
+<div class="night" id="night" data-controller="night" data-action="shell:mode@document->night#mode click->night#tap">
+  <div class="nt-inner" data-night-target="inner">
+    <div class="nt-time num" data-controller="clock" data-action="shell:minute@document->clock#render"><span data-clock-target="time"><%= fmt_time(now, ampm: false) %></span></div>
+    <%= render "today/night_info" %>
+  </div>
+</div>

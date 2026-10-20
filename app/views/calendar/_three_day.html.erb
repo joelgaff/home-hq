@@ -1,0 +1,35 @@
+<%# 3-Day mode: three day columns, all-day bars spanning days, the now-line on today only. %>
+<% days = (0..2).map { |i| date + i } %>
+<% today_index = days.index(now.to_date) %>
+<% start = days.first.in_time_zone.beginning_of_day %>
+<% all_day = @household.events.all_day.overlapping(start, start + 3.days).includes(attendees: :person).by_start %>
+<div class="cal-day cal-3">
+  <div class="lanes-head"><div class="gutter"></div>
+    <% days.each do |d| %>
+      <div class="day-head<%= " is-today" if d == now.to_date %>"><span class="num"><%= d.day %></span><b><%= fmt_rel(d, now: now) %></b><small><%= fmt_month_short(d) %></small></div>
+    <% end %>
+  </div>
+  <% if all_day.any? %>
+    <div class="allday"><div class="gutter label">All day</div><div class="allday-grid allday-grid--3">
+      <% all_day.each do |e| %>
+        <% a = [ 0, ((e.starts_at - start) / 1.day).round ].max %>
+        <% b = [ 3, ((e.ends_at - start) / 1.day).round ].min %>
+        <% cont = e.starts_at < start %>
+        <button class="ad<%= " ad--cont" if cont %>" data-ev="<%= e.id %>" style="grid-column:<%= a + 1 %> / <%= b + 1 %>;<%= e.color_person.style %>"><%= icon("left", 16) if cont %><%= e.title %><%= icon("right", 16) if e.ends_at > start + 3.days %></button>
+      <% end %>
+    </div></div>
+  <% end %>
+  <div class="grid-scroll" data-calendar-target="scroll" data-action="scroll->calendar#scrolled">
+    <div class="grid" style="height:<%= grid_height %>px">
+      <%= render "calendar/hours" %>
+      <div class="lanes lanes--3">
+        <% days.each do |d| %>
+          <div class="lane<%= " is-today" if d == now.to_date %>">
+            <%= render "calendar/blocks", events: @household.timed_events_on(d).to_a, day: d, now: now, lane: nil %>
+          </div>
+        <% end %>
+      </div>
+      <% if today_index %><%= render "calendar/now_line", now: now, index: today_index %><% end %>
+    </div>
+  </div>
+</div>

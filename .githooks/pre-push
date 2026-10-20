@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Pre-push guard: run the full local CI suite (bin/ci) before anything hits
+# GitHub, so a red build never costs Actions minutes or a deploy. When it
+# passes, the pushed commit gets a green "signoff" status on GitHub.
+#
+# bin/setup enables it once per clone with:
+#
+#   git config core.hooksPath .githooks
+#
+# Skip a single push (an emergency) with:  git push --no-verify
+#
+# Canonical copy: ~/Work/ci-template/pre-push. Install into a repo with
+# ~/Work/ci-template/install.
+set -euo pipefail
+
+remote="$1"
+url="$2"
+refs=$(cat)  # git passes the refs being pushed on stdin; read it before bin/ci can
+
+zero=0000000000000000000000000000000000000000
+if [[ -z "$refs" ]] || ! grep -qv " $zero " <<<"$refs"; then
+  exit 0  # nothing but branch deletions
+fi
+
+echo "pre-push: running bin/ci before pushing..."
+if ! bin/ci; then
+  echo "pre-push: bin/ci FAILED. Push blocked. Fix it, or bypass with 'git push --no-verify'." >&2
+  exit 1
+fi
+echo "pre-push: bin/ci passed."
+
+# gh signoff can only mark a commit GitHub already has, and the push hasn't
+# happened yet. So upload the commit to a scratch ref (not a branch, so no
+# deploy fires), sign off on it, then drop the scratch ref. A signoff problem
+# never blocks the push.
+signoff() {
+  local sha="$1" scratch="refs/ci-signoff/$1"
+  git push --quiet --no-verify "$remote" "$sha:$scratch" &&
+    gh signoff -f --commit "$sha" &&
+    echo "pre-push: signed off on ${sha:0:7}."
+  git push --quiet --no-verify "$remote" ":$scratch" 2>/dev/null || true
+}
+
+if [[ "$url" == *github.com* ]] && command -v gh >/dev/null; then
+  head=$(git rev-parse HEAD)
+  dirty=$(git status --porcelain)
+  while read -r _ local_sha _ _; do
+    [[ "$local_sha" == "$zero" ]] && continue
+    if [[ "$local_sha" != "$head" || -n "$dirty" ]]; then
+      echo "pre-push: skipping signoff on ${local_sha:0:7}; bin/ci checked the working tree, not that commit." >&2
+      continue
+    fi
+    signoff "$local_sha" || echo "pre-push: signoff failed; pushing anyway." >&2
+  done <<<"$refs"
+fi
+
+echo "pre-push: pushing."

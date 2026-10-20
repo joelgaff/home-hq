@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body sheet-pad" data-sheet-class="sheet--wide">
+    <div class="label">Doors + garage</div>
+    <h2 class="serif sheet-h">Security</h2>
+    <div class="tiles tiles--sheet">
+      <% @devices.each do |device| %><%= render "control/tile", device: device, in_sheet: true %><% end %>
+    </div>
+    <div class="sheet-actions">
+      <%= button_to "Lock all doors", locks_path, class: "btn btn--solid", form: { data: { turbo_stream: true } } %>
+    </div>
+  </div>
+<% end %>

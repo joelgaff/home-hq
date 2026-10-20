@@ -1,0 +1,45 @@
+<%# The stage: everything the frame shows lives here, all views warm. Overlays by z-order: banners
+    40, sheet 50, toasts 60, ambient 65, night 66, takeover 70, demo 90, diag 100 (ui-spec §0). %>
+<div class="stage" id="stage" data-mode="day" data-night-style="<%= @screen.night_style %>"
+     data-controller="shell diag connection"
+     data-shell-now-value="<%= (Current.now.to_f * 1000).round %>"
+     data-shell-offset-value="<%= Current.now.utc_offset / 60 %>"
+     data-shell-idle-home-value="60" data-shell-idle-ambient-value="120"
+     data-shell-layout-value="<%= frame_layout? ? "frame" : "app" %>" data-shell-clock-value="<%= @household.clock_format %>"
+     <%# The screen's own settings (plan: per-screen settings); a person's browser gets the defaults. %>
+     data-shell-view-value="<%= @screen.default_view %>" data-shell-night-from-value="<%= @screen.night_from %>" data-shell-night-to-value="<%= @screen.night_to %>"
+     <%= tag.attributes("data-shell-reload-hour-value": @screen.reload_hour) if current_screen && @screen.reload_hour %>>
+  <%= render "dashboard/rail" %>
+
+  <main class="views">
+    <%= render "dashboard/views/home" %>
+    <%= render "dashboard/views/calendar" %>
+    <%= render "dashboard/views/tasks" %>
+    <%= render "dashboard/views/shopping" %>
+    <%= render "dashboard/views/photos" %>
+    <%= render "dashboard/views/control" %>
+    <%= render "dashboard/views/people" %>
+    <div class="banners" id="banners"></div>
+  </main>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <div class="sheet-layer" id="sheetLayer" data-controller="sheet" data-action="shell:close-sheet@document->sheet#close turbo:submit-end->sheet#close">
+    <div class="sheet-scrim" data-action="click->sheet#close"></div>
+    <div class="sheet" data-sheet-target="box">
+      <button class="sheet-x" data-action="click->sheet#close" aria-label="Close"><%= icon("x", 28) %></button>
+      <%= turbo_frame_tag "sheet", data: { sheet_target: "frame" } %>
+    </div>
+  </div>
+  <%# Takeovers and banners are the frame's (plan: Small screens: phones get push later). %>
+  <%= render "dashboard/alerts" if frame_layout? %>
+  <%= render "dashboard/ambient" %>
+  <%= render "dashboard/night" %>
+  <%# The demo tools exist only on a demo household (plan: milestone 3, second review). %>
+  <%= render "dashboard/demo" if @household.demo? %>
+  <template id="tpl-offline"><div class="banner banner--ink banner--offline"><%= icon("bolt", 30) %><div class="banner-text"><b>Offline · showing data from <span data-connection-since></span></b><span>Trying again…</span></div></div></template>
+  <template id="tpl-offline-write"><%= render "toasts/toast", html: "Can’t save while offline", icon: "bolt", ms: 3000 %></template>
+  <% if @household.demo? %><template id="tpl-tip"><%= render "toasts/toast", html: "Tip: press and hold the <b>clock</b> in the sidebar for demo controls", icon: "bolt", ms: 6000, tone: "tip" %></template><% end %>
+</div>
+<%# Live sync: the household's stream (outside the stage, which is a grid). %>
+<%= turbo_stream_from @household %>
+<%= turbo_stream_from current_screen if current_screen %>

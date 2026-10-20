@@ -1,0 +1,16 @@
+<% household = Current.household %>
+<% now = Current.now %>
+<% report = household.latest_weather %>
+<% day = now.hour < 6 ? now : now + 1.day %>
+<% first = household.timed_events_on(day).first %>
+<%= turbo_frame_tag "night-info", data: { controller: "refresh", refresh_every_value: "hour", refresh_url_value: today_path(part: "night_info") } do %>
+  <div class="nt-line">
+    <% if report %><% w = report.outlook(at: now) %><%= icon(w.condition, 26) %> <%= w.temperature %>° · <% end %>
+    <% if first %>
+      First up <%= fmt_rel(first.starts_at, now: now).downcase %>: <b><%= first.title %></b> <%= fmt_time(first.starts_at) %> · <%= first.attending_people.first&.name %>
+    <% else %>
+      Nothing early tomorrow
+    <% end %>
+  </div>
+  <div class="nt-lock"><%= icon(household.secure? ? "lock" : "unlock", 20) %> <%= household.secure? ? "House locked" : household.security_line %></div>
+<% end %>

@@ -1,0 +1,59 @@
+# The outside uptime check. Not CI (that runs locally, bin/ci): every
+# 30 minutes GitHub asks the public /up from outside the home network and tells the Telegram chat
+# when the answer changes: once when the app goes down, once when it is back. The last state is
+# remembered in the Actions cache. Secrets: HOME_DASHBOARD_URL (https://…, no trailing slash),
+# TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID.
+name: Uptime
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Restore the last state
+        uses: actions/cache/restore@v4
+        with:
+          path: .uptime-state
+          key: uptime-state-${{ github.run_id }}
+          restore-keys: uptime-state-
+
+      - name: Ask /up (three tries) and tell the chat on a change
+        env:
+          URL: ${{ secrets.HOME_DASHBOARD_URL }}
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -u
+          if [ -z "$URL" ]; then echo "::notice::HOME_DASHBOARD_URL is not set; nothing to check"; exit 0; fi
+          state=up
+          for i in 1 2 3; do
+            if curl -fs --max-time 20 -o /dev/null "$URL/up"; then state=up; break; fi
+            state=down; sleep 20
+          done
+          last=$(cat .uptime-state 2>/dev/null || echo up)
+          echo "last=$last now=$state"
+          if [ "$state" != "$last" ] && [ -n "$BOT" ] && [ -n "$CHAT" ]; then
+            if [ "$state" = down ]; then text="Home HQ is down: /up has not answered for a minute (checked from outside)."
+            else text="Home HQ is back: /up answers again."; fi
+            curl -fsS --max-time 20 -o /dev/null "https://api.telegram.org/bot$BOT/sendMessage" \
+              --data-urlencode "chat_id=$CHAT" --data-urlencode "text=$text"
+          fi
+          echo "$state" > .uptime-state
+
+      - name: Remember the state
+        uses: actions/cache/save@v4
+        with:
+          path: .uptime-state
+          key: uptime-state-${{ github.run_id }}

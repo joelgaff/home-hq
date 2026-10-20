@@ -1,0 +1,22 @@
+<%= form_with model: [ :settings, todo ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: todo %>
+  <%= f.label :title %>
+  <%= f.text_field :title, class: "page-input", autofocus: true, placeholder: "Pack swim bag" %>
+  <%= f.label :person_id, "For" %>
+  <%= f.select :person_id, @household.people.map { |p| [ p.name, p.id ] }, { include_blank: "Anyone" }, class: "page-select" %>
+  <div class="settings-row">
+    <div>
+      <%= f.label :due_on, "Due on (optional)" %>
+      <%= f.date_field :due_on, class: "page-input" %>
+    </div>
+    <div>
+      <%= f.label :due_at, "Due at (optional time)" %>
+      <%= f.datetime_field :due_at, class: "page-input" %>
+    </div>
+    <div>
+      <%= f.label :stars, "Stars (kids)" %>
+      <%= f.number_field :stars, class: "page-input page-input--short", min: 0 %>
+    </div>
+  </div>
+  <%= f.submit(todo.new_record? ? "Add to-do" : "Save", class: "btn btn--solid") %>
+<% end %>

@@ -1,0 +1,8 @@
+<% content_for(:title, "Climate · Settings") %>
+<p class="page-note"><%= link_to "← Home", settings_home_path %></p>
+<h1 class="serif">Climate</h1>
+<%= form_with model: @thermostat, url: settings_climate_path, method: :patch, class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: @thermostat %>
+  <%= render "settings/entity_field", f: f, entities: @entities, label: "Thermostat entity (blank = demo)", placeholder: "climate.ecobee" %>
+  <%= f.submit "Save", class: "btn btn--solid" %>
+<% end %>

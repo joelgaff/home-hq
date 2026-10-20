@@ -1,0 +1,47 @@
+piano_skidmark:
+  event: piano
+  person: skidmark
+
+soccer_buzzsaw:
+  event: soccer
+  person: buzzsaw
+
+dentist_buzzsaw:
+  event: dentist
+  person: buzzsaw
+
+dentist_claudia:
+  event: dentist
+  person: claudia
+
+dinner_wes:
+  event: dinner
+  person: wes
+
+dinner_claudia:
+  event: dinner
+  person: claudia
+
+dinner_buzzsaw:
+  event: dinner
+  person: buzzsaw
+
+dinner_skidmark:
+  event: dinner
+  person: skidmark
+
+pajama_skidmark:
+  event: pajama_day
+  person: skidmark
+
+montreal_wes:
+  event: montreal
+  person: wes
+
+gym_claudia:
+  event: gym_tomorrow
+  person: claudia
+
+plumber_claudia:
+  event: plumber
+  person: claudia

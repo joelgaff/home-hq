@@ -1,0 +1,18 @@
+<%# Shopping (ui-spec §1.4): the list (a Turbo Frame re-rendered by every write) and the side
+    panel. The add box stays outside both frames so typing survives a re-render. %>
+<% household = Current.household %>
+<div class="shop">
+  <%= render "shopping/list", store: nil, drawer: false, flash_id: nil %>
+  <aside class="s-side" data-controller="suggest" data-suggest-add-url-value="<%= grocery_items_path %>"
+         data-suggest-catalog-value="<%= household.catalog_items.includes(:category).map { |c| [ c.name, c.category&.name || "Other" ] }.to_json %>"
+         data-action="click->suggest#tap">
+    <div class="s-add">
+      <label class="s-input-wrap"><%= icon("plus", 30) %><input class="s-input" placeholder="Add an item…" autocomplete="off" enterkeyhint="done"
+        data-suggest-target="input" data-action="input->suggest#typed keydown->suggest#key"></label>
+    </div>
+    <div class="s-suggest">
+      <div data-suggest-target="matches" hidden></div>
+      <%= render "shopping/side" %>
+    </div>
+  </aside>
+</div>

@@ -1,0 +1,6 @@
+<%= form_with model: [ :settings, category ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: category %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= f.submit(category.new_record? ? "Add category" : "Save", class: "btn btn--solid") %>
+<% end %>

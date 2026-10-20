@@ -1,0 +1,12 @@
+# Wes's demo day: sunny morning, rain from 4 PM to 7 PM (ui-spec §1.1).
+<% temps = [9, 9, 8, 8, 8, 8, 9, 10, 11, 12, 13, 15, 16, 17, 16, 15, 14, 13, 12, 12, 11, 10, 10, 9]
+   conds = %w[moon moon moon moon moon moon partly partly sun sun sun partly partly cloud cloud cloud rain rain rain rain cloud cloud moon moon]
+   rain = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 10, 20, 25, 40, 80, 90, 70, 55, 20, 10, 0, 0] %>
+<% 24.times do |h| %>
+hour_<%= h %>:
+  weather_report: today
+  hour: <%= h %>
+  temperature: <%= temps[h] %>
+  condition: <%= conds[h] %>
+  precipitation_chance: <%= rain[h] %>
+<% end %>

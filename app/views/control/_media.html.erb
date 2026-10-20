@@ -1,0 +1,8 @@
+<% m = Current.household.media_player %>
+<div class="hc-media card" id="control-media" data-controller="media" data-media-url-value="<%= media_player_path %>">
+  <% if m %>
+    <img class="np-art" src="<%= m.art_url %>" alt="">
+    <div class="np-text"><span class="label"><%= m.room_name %></span><b><%= m.title %></b><span><%= m.artist %></span></div>
+    <button class="np-btn" data-playing="<%= m.playing? %>" data-action="click->media#toggle" aria-label="Play/Pause"><%= icon(m.playing? ? "pause" : "play", 30) %></button>
+  <% end %>
+</div>

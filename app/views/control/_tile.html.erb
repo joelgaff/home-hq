@@ -1,0 +1,35 @@
+<%# A device tile (ui-spec §1.6). The tile controller does the gestures and the optimistic
+    update; the server's answer replaces every copy of the tile (class device-N). %>
+<% kind = device.kind %>
+<% tile_id = local_assigns[:in_sheet] ? nil : dom_id(device) %>
+<% tile_class = "tile tile--#{{ 'door_lock' => 'lock', 'garage_door' => 'garage' }.fetch(kind, kind)} device-#{device.id}" %>
+<% case kind %>
+<% when "light" %>
+  <div id="<%= tile_id %>" class="<%= tile_class %><%= " is-on" if device.on? %>" style="--lvl:<%= device.fill_percent %>%" data-controller="tile" data-device="<%= device.id %>" data-tile-url-value="<%= device_path(device) %>" data-tile-kind-value="light" data-tile-name-value="<%= device.name %>" data-tile-on-value="<%= device.on? %>" data-tile-level-value="<%= device.level %>">
+    <span class="tile-fill"></span>
+    <span class="tile-icon"><%= icon("bulb", 28) %></span>
+    <span class="tile-name"><%= device.name %></span>
+    <span class="tile-state num" data-tile-target="state"><%= device.state_label %></span>
+  </div>
+<% when "blind" %>
+  <div id="<%= tile_id %>" class="<%= tile_class %><%= " is-on" if device.on? %>" style="--lvl:<%= device.fill_percent %>%" data-controller="tile" data-device="<%= device.id %>" data-tile-url-value="<%= device_path(device) %>" data-tile-kind-value="blind" data-tile-name-value="<%= device.name %>" data-tile-level-value="<%= device.position %>">
+    <span class="tile-fill"></span>
+    <span class="tile-icon"><%= icon("blinds", 28) %></span>
+    <span class="tile-name"><%= device.name %></span>
+    <span class="tile-state num" data-tile-target="state"><%= device.state_label %></span>
+  </div>
+<% when "door_lock" %>
+  <div id="<%= tile_id %>" class="<%= tile_class %><%= " is-warn" unless device.locked? %>" data-controller="tile" data-device="<%= device.id %>" data-tile-url-value="<%= device_path(device) %>" data-tile-kind-value="door_lock" data-tile-name-value="<%= device.name %>" data-tile-locked-value="<%= device.locked? %>">
+    <span class="tile-icon"><%= icon(device.locked? ? "lock" : "unlock", 28) %></span>
+    <span class="tile-name"><%= device.name %></span>
+    <span class="tile-state"><%= device.state_label %><small><%= device.locked? ? "Hold to unlock" : "Tap to lock" %></small></span>
+    <svg class="hold-ring" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/></svg>
+    <template data-tile-target="hint"><%= render "toasts/toast", html: "Hold for a second to unlock <b>#{ERB::Util.html_escape(device.name)}</b>", icon: "lock", ms: 2200 %></template>
+  </div>
+<% when "garage_door" %>
+  <div id="<%= tile_id %>" class="<%= tile_class %><%= " is-warn" unless device.secure? %><%= " is-moving" if device.deviceable.moving? %>" data-controller="tile" data-device="<%= device.id %>" data-tile-url-value="<%= device_path(device) %>" data-tile-kind-value="garage_door" data-tile-name-value="<%= device.name %>" data-tile-sheet-url-value="<%= garage_device_path(device) %>">
+    <span class="tile-icon"><%= icon("garage", 28) %></span>
+    <span class="tile-name"><%= device.name %></span>
+    <span class="tile-state"><%= device.state_label %></span>
+  </div>
+<% end %>

@@ -1,0 +1,4 @@
+<% content_for(:title, "Add a to-do · Settings") %>
+<p class="page-note"><%= link_to "← To-dos", settings_todos_path %></p>
+<h1 class="serif">Add a to-do</h1>
+<%= render "form", todo: @todo %>

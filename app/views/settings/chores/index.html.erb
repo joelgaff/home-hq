@@ -1,0 +1,20 @@
+<% content_for(:title, "Chores · Settings") %>
+<% unless @household.routines.exists? %>
+  <p class="page-note">Add a routine first: chores live in one. <%= link_to "Routines", settings_routines_path %></p>
+<% end %>
+<%= render "settings/header", title: "Chores", add_path: new_settings_chore_path %>
+<% @routines.each do |routine| %>
+  <h2 class="serif settings-h2"><%= routine.name %> <small class="page-note"><%= routine.range_label %></small></h2>
+  <% lanes = routine.chores.in_order.group_by(&:person) %>
+  <% (@household.people.to_a + [ nil ]).each do |person| %>
+    <% next unless lanes[person] %>
+    <div class="label settings-lane"><%= person ? person.name : "Anyone" %></div>
+    <ul class="settings-list">
+      <% lanes[person].each do |c| %>
+        <%= render "settings/row", title: "#{c.emoji} #{c.title}", sub: [ ("★#{c.stars}" if c.stars.positive?), (c.every_day? ? "every day" : c.weekday_names.map(&:capitalize).join(" ")) ].compact.join(" · "),
+              edit_path: edit_settings_chore_path(c), move_path: move_settings_chore_path(c), delete_path: settings_chore_path(c) %>
+      <% end %>
+    </ul>
+  <% end %>
+  <p class="page-note"><%= link_to "+ Add to #{routine.name}", new_settings_chore_path(routine_id: routine.id) %></p>
+<% end %>

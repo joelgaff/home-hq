@@ -1,0 +1,17 @@
+<% t = Current.household.thermostat %>
+<div class="hc-climate" id="control-climate" data-controller="climate" data-climate-url-value="<%= thermostat_path %>">
+  <% if t %>
+    <div class="label label--light">Climate · Main floor</div>
+    <div class="th-main">
+      <button class="th-btn" data-action="click->climate#step" data-delta="<%= format('%g', -t.step) %>" aria-label="Cooler"><%= icon("minus", 36) %></button>
+      <div class="th-set"><span class="num"><%= t.target_label %>°</span><small>Set to</small></div>
+      <button class="th-btn" data-action="click->climate#step" data-delta="<%= format('%g', t.step) %>" aria-label="Warmer"><%= icon("plus", 36) %></button>
+    </div>
+    <div class="th-now"><span><b class="num"><%= t.current_label %>°</b> inside</span><span class="th-verb th-verb--<%= t.verb.downcase %>"><%= t.verb %></span><span><b class="num"><%= t.humidity %>%</b> humidity</span></div>
+    <div class="seg seg--dark">
+      <% [ %w[heat Heat], %w[cool Cool], %w[auto Auto], %w[off Off] ].each do |mode, label| %>
+        <button class="<%= "is-on" if t.mode == mode %>" data-tmode="<%= mode %>" data-action="click->climate#mode"><%= label %></button>
+      <% end %>
+    </div>
+  <% end %>
+</div>

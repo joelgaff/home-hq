@@ -1,0 +1,6 @@
+<%= form_with model: [ :settings, room ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: room %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= f.submit(room.new_record? ? "Add room" : "Save", class: "btn btn--solid") %>
+<% end %>

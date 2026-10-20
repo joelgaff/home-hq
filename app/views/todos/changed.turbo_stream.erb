@@ -1,0 +1,6 @@
+<%= turbo_stream.replace "today-lanes" do %><%= render "today/lanes" %><% end %>
+<% unless frame_layout? %><%= turbo_stream.replace "today-agenda" do %><%= render "today/agenda" %><% end %><% end %>
+<turbo-stream action="pieces" targets="chores,people"><template></template></turbo-stream>
+<%= turbo_stream.update "toasts" do %>
+  <%= render "toasts/toast", **@toast if @toast %>
+<% end %>

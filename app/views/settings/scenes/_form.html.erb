@@ -1,0 +1,18 @@
+<%= form_with model: [ :settings, scene ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: scene %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= f.label :icon, "Icon name (sun, moon, film, lock, bulb…)" %>
+  <%= f.text_field :icon, class: "page-input" %>
+  <label class="settings-check"><%= f.check_box :locks_all %> <span>Locks every door (Away, Goodnight)</span></label>
+  <%= f.label :levels, "Levels (blank = not in this scene; 0 = off; blinds: position)" %>
+  <% levels = scene.scene_settings.to_h { |s| [ s.device_id, s.level ] } %>
+  <% @devices.each do |d| %>
+    <div class="settings-row settings-level">
+      <span><%= d.room&.name %> · <%= d.name %></span>
+      <%= number_field_tag "scene[levels][#{d.id}]", levels[d.id], min: 0, max: 100, class: "page-input page-input--short" %>
+    </div>
+  <% end %>
+  <%= render "settings/entity_field", f: f, entities: (HomeAssistant.configured? ? HomeAssistant.entities(%w[scene script]) : []), label: "Also turn on a Home Assistant scene or script (optional)", placeholder: "scene.movie_time" %>
+  <%= f.submit(scene.new_record? ? "Add scene" : "Save", class: "btn btn--solid") %>
+<% end %>

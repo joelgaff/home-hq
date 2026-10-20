@@ -1,0 +1,36 @@
+<%# The event sheet (ui-spec §1.2): colour band, leave-by, location, people chips, notes. %>
+<% e = @event %>
+<% person = e.color_person %>
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body evs" data-sheet-class="sheet--event" style="<%= person.style %>">
+    <div class="evs-band">
+      <div class="label label--on"><%= fmt_rel(e.starts_at) %> · <%= fmt_month(e.starts_at) %> <%= e.starts_at.day %></div>
+      <h2 class="serif"><%= e.title %></h2>
+      <div class="evs-time num"><%= e.all_day? ? "All day" : fmt_range(e.starts_at, e.ends_at) %></div>
+    </div>
+    <div class="evs-body">
+      <% if e.travel? %>
+        <div class="evs-row evs-leave"><%= icon("car", 28) %><div><b>Leave by <%= fmt_time(e.leave_by) %></b><span><%= e.travel_minutes %> min drive in current traffic</span></div></div>
+      <% end %>
+      <% if e.location.present? %>
+        <%= link_to directions_event_path(e), class: "evs-row evs-link" do %><%= icon("pin", 28) %><div><b><%= e.location %></b><span>Tap for directions on your phone</span></div><% end %>
+      <% end %>
+      <%# Who it is for: tap a person to add or drop them (each chip submits the resulting set), Everyone
+          for a family event, and back to the calendar's own reading once overridden. %>
+      <% current = e.family? ? @household.people.to_a : e.attending_people %>
+      <%= form_with url: event_path(e), method: :patch, class: "evs-row evs-who", data: { sheet_keep: true } do %>
+        <%= icon("person", 28) %>
+        <div class="evs-people">
+          <% @household.people.each do |p| %>
+            <% on = current.include?(p) %>
+            <% set = on ? current - [ p ] : current + [ p ] %>
+            <button class="chip<%= " is-on" if on %>" style="<%= p.style %>" name="person_ids[]" value="<%= set.map(&:id).join(",") %>" aria-pressed="<%= on %>"><%= avatar(p, 32) %><%= p.name %></button>
+          <% end %>
+          <button class="chip<%= " is-on" if e.family? %>" style="<%= @household.family.style %>" name="everyone" value="1"><%= avatar(@household.family, 32) %>Everyone</button>
+          <% if e.people_overridden? %><button class="chip chip--ghost" name="reset" value="1">Back to the calendar's</button><% end %>
+        </div>
+      <% end %>
+      <% if e.notes.present? %><div class="evs-notes serif">“<%= e.notes %>”</div><% end %>
+    </div>
+  </div>
+<% end %>

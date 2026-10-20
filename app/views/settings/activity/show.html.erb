@@ -1,0 +1,13 @@
+<% content_for(:title, "Activity · Settings") %>
+<p class="page-note"><%= link_to "← Settings", settings_path %></p>
+<h1 class="serif">Activity</h1>
+<p class="page-note">Settings changes, chores completed and undone, locks and scenes, for the last ninety days.</p>
+<% if @entries.any? %>
+  <ul class="activity">
+    <% @entries.each do |entry| %>
+      <li class="settings-item"><div class="settings-text"><b><%= entry.sentence %></b><small><%= l(entry.created_at.in_time_zone, format: :long) %></small></div></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Nothing yet.</p>
+<% end %>

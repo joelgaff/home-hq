@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "today-presence", class: "h-presence" do %>
+  <%# Adults only (plan: gap review): the kids' whereabouts stay off the wall. %>
+  <% @household.people.reject(&:kid?).each do |p| %>
+    <div class="h-who<%= " is-home" if p.home? %>" style="<%= p.style %>">
+      <%= avatar(p, 36, p.home? ? nil : "avatar--away") %>
+      <span><b><%= p.name %></b><small><% if p.eta? %><b><%= p.presence_line %></b><% else %><%= p.presence_line %><% end %></small></span>
+    </div>
+  <% end %>
+<% end %>

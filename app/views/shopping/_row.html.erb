@@ -1,0 +1,19 @@
+<%# One open item. The grocery controller handles the check (1.2 s pending with a cancellable
+    toast) and the quantity buttons; a freshly added row flashes and scrolls into view. %>
+<% context = { store: store&.id } %>
+<div class="s-row<%= " is-flash" if flash_id == item.id %>" id="<%= dom_id(item) %>" data-controller="grocery"
+     data-grocery-check-url-value="<%= check_grocery_item_path(item, context) %>" data-grocery-qty-url-value="<%= grocery_item_path(item, context) %>">
+  <button class="s-hit" data-action="click->grocery#check">
+    <span class="s-box"><%= icon("check", 22) %></span>
+    <span class="s-name"><b><%= item.name %></b><% if item.note.present? %><small><%= item.note %></small><% end %></span>
+    <% if store.nil? && item.store %><span class="s-store"><%= item.store.name %></span><% end %>
+  </button>
+  <button class="s-edit" data-sheet-url="<%= edit_grocery_item_path(item, context) %>" aria-label="Edit <%= item.name %>"><%= icon("more", 22) %></button>
+  <%= button_to grocery_item_path(item, context), method: :delete, class: "s-edit s-trash", "aria-label": "Remove #{item.name}", form_class: "s-trash-form", form: { data: { turbo_stream: true } } do %><%= icon("trash", 22) %><% end %>
+  <div class="s-qty">
+    <button data-action="click->grocery#qty" data-delta="-1" aria-label="Less"><%= icon("minus", 22) %></button>
+    <span class="num"><%= item.quantity %></span>
+    <button data-action="click->grocery#qty" data-delta="1" aria-label="More"><%= icon("plus", 22) %></button>
+  </div>
+  <template data-grocery-target="toast"><%= render "toasts/toast", html: "<b>#{ERB::Util.html_escape(item.name)}</b> checked off", icon: "check", undo: true %></template>
+</div>

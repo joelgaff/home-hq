@@ -1,0 +1,16 @@
+<p class="page-note"><%= link_to "← Screens", screens_path %></p>
+<h1 class="serif"><%= @screen.name %></h1>
+
+<% if @screen.enrolled? %>
+  <p>Enrolled <%= l(@screen.enrolled_at, format: :long) %>. The device stays signed in for a year.</p>
+<% else %>
+  <p>Open this link once on the device to sign it in:</p>
+  <p><code><%= enroll_screen_url(@screen.enrollment_token) %></code></p>
+  <p>The link works a single time.</p>
+<% end %>
+
+<p>Night <%= @screen.night_label %> · starts on <%= @screen.default_view_name %> ·
+  <%= @screen.reload_hour ? "reloads at #{Screen.hour_word(@screen.reload_hour)}" : "never reloads" %>.
+  <%= link_to "Edit", edit_screen_path(@screen) %></p>
+
+<%= button_to "Remove this screen", @screen, method: :delete, data: { turbo_confirm: "Remove #{@screen.name}? It will be signed out." } %>

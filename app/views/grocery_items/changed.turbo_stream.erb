@@ -1,0 +1,12 @@
+<%= turbo_stream.replace "shopping" do %>
+  <%= render "shopping/list", store: @store, drawer: @drawer, flash_id: @flash_id %>
+<% end %>
+<%= turbo_stream.replace "shopping-side" do %>
+  <%= render "shopping/side" %>
+<% end %>
+<%= turbo_stream.replace "today-shopping" do %>
+  <%= render "today/shopping" %>
+<% end %>
+<%= turbo_stream.update "toasts" do %>
+  <%= render "toasts/toast", **@toast if @toast %>
+<% end %>

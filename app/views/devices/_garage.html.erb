@@ -1,0 +1,14 @@
+<%# Slide-to-confirm for the garage (ui-spec §1.6). %>
+<% opening = @device.state == "closed" %>
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body sheet-pad" data-sheet-class="">
+    <div class="label">Garage door · currently <%= @device.state %></div>
+    <h2 class="serif sheet-h"><%= opening ? "Open" : "Close" %> the garage?</h2>
+    <p class="sheet-p"><%= opening ? "Make sure the driveway is clear." : "The door will stop and reverse if anything is in the way." %></p>
+    <div class="slide-confirm" data-controller="slide" data-slide-url-value="<%= device_path(@device) %>" data-slide-moving-value="<%= opening ? "opening" : "closing" %>" data-slide-final-value="<%= opening ? "open" : "closed" %>">
+      <span class="sc-label">Slide to <%= opening ? "open" : "close" %> →</span>
+      <span class="sc-fill" data-slide-target="fill"></span>
+      <span class="sc-knob" data-slide-target="knob" data-action="pointerdown->slide#down pointermove->slide#move pointerup->slide#up pointercancel->slide#up"><%= icon("garage", 30) %></span>
+    </div>
+  </div>
+<% end %>

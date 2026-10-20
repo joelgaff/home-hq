@@ -1,0 +1,21 @@
+<%# A chore row. Tap: not done → 350 ms check animation then the completion is posted (Anyone
+    chores first ask who did it); done → un-completed at once. The chore controller drives it. %>
+<% done = chore.done? %>
+<% by = chore.done_by %>
+<% late = chore.overdue? && !done %>
+<button class="ch<%= " is-done" if done %><%= " is-overdue" if late %>" data-chore="<%= chore.id %>"
+        data-controller="chore" data-action="click->chore#tap"
+        data-chore-complete-url-value="<%= chore_completions_path(chore, routine: routine.id) %>"
+        data-chore-undo-url-value="<%= done ? chore_completion_path(chore.completion_today, routine: routine.id) : "" %>"
+        data-chore-ask-url-value="<%= chore.anyone? && !done ? new_chore_completion_path(chore, routine: routine.id) : "" %>">
+  <span class="ch-emoji"><%= chore.emoji %><span class="ch-check"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span></span>
+  <span class="ch-text"><b><%= chore.title %></b>
+    <% if late %>
+      <small class="ch-late">Overdue</small>
+    <% elsif chore.stars.positive? %>
+      <small><%= icon("star", 14, "i--fill") %><%= chore.stars %><%= " · #{by.name}" if by %></small>
+    <% elsif by %>
+      <small>by <%= by.name %></small>
+    <% end %>
+  </span>
+</button>

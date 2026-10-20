@@ -1,0 +1,14 @@
+<%= form_with model: [ :settings, routine ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: routine %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <div class="settings-row">
+    <div><%= f.label :from_hour, "From (hour, 0–23)" %><%= f.number_field :from_hour, in: 0..24, class: "page-input" %></div>
+    <div><%= f.label :to_hour, "To (hour, 1–24)" %><%= f.number_field :to_hour, in: 0..24, class: "page-input" %></div>
+  </div>
+  <%= f.label :range_label, "Label (blank = from the hours)" %>
+  <%= f.text_field :range_label, class: "page-input", placeholder: "6 – 11 AM" %>
+  <%= f.label :weekdays, "Days" %>
+  <%= render "settings/weekdays", record: routine, param: "routine" %>
+  <%= f.submit(routine.new_record? ? "Add routine" : "Save", class: "btn btn--solid") %>
+<% end %>

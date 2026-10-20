@@ -1,0 +1,7 @@
+<%# A quantity change: just the row, and the side panel's "On list ×N" tiles. %>
+<%= turbo_stream.replace dom_id(@item) do %>
+  <%= render "shopping/row", item: @item, store: @store, flash_id: nil %>
+<% end %>
+<%= turbo_stream.replace "shopping-side" do %>
+  <%= render "shopping/side" %>
+<% end %>

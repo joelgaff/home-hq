@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "control-climate" do %>
+  <%= render "control/climate" %>
+<% end %>
+<%= turbo_stream.replace "control-sum" do %>
+  <%= render "control/summary" %>
+<% end %>
+<%= turbo_stream.replace "today-status" do %>
+  <%= render "today/status" %>
+<% end %>

@@ -1,0 +1,40 @@
+# Example Home Assistant automations that post alerts to the dashboard (plan: milestone 6).
+# Paste into automations.yaml (or build them in the UI) and change the entity ids. The secret is
+# home_assistant.webhook_secret in the app's credentials; HOMEHQ is the app's public address.
+#
+# Kinds the app understands: doorbell, package, leak, garage_open (the app also times the garage
+# itself, fifteen minutes after it opens, when the garage cover is mapped).
+- alias: Home HQ – doorbell
+  triggers:
+    - trigger: state
+      entity_id: event.front_doorbell_ding   # Ring: the doorbell's "ding" event entity
+  actions:
+    - action: rest_command.homehq_alert
+      data: { kind: doorbell, camera: camera.front_door }
+
+- alias: Home HQ – package
+  triggers:
+    - trigger: state
+      entity_id: event.front_door_package    # Nest/Ring: a package event entity
+  actions:
+    - action: rest_command.homehq_alert
+      data: { kind: package, camera: camera.front_door, message: Front porch }
+
+- alias: Home HQ – water leak
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.laundry_leak
+      to: "on"
+  actions:
+    - action: rest_command.homehq_alert
+      data: { kind: leak, message: Laundry room sensor detected water on the floor. }
+
+# configuration.yaml: the REST command the automations call.
+# rest_command:
+#   homehq_alert:
+#     url: https://HOMEHQ/hooks/home_assistant
+#     method: post
+#     headers:
+#       X-Hook-Secret: !secret homehq_hook_secret
+#     content_type: application/json
+#     payload: '{"kind": "{{ kind }}", "camera": "{{ camera | default(\'\') }}", "message": "{{ message | default(\'\') }}"}'

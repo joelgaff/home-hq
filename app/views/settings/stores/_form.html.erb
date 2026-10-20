@@ -1,0 +1,6 @@
+<%= form_with model: [ :settings, store ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: store %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= f.submit(store.new_record? ? "Add store" : "Save", class: "btn btn--solid") %>
+<% end %>

@@ -1,0 +1,8 @@
+<h1 class="serif">Enter your code</h1>
+<p class="page-note">We emailed a six-digit code to <b><%= @identity.email %></b>.</p>
+<%= form_with url: confirm_session_path, method: :post, class: "page-form", data: { turbo: false } do |f| %>
+  <%= f.hidden_field :identity_id, value: @identity.id %>
+  <%= f.text_field :code, inputmode: "numeric", pattern: "[0-9]*", maxlength: 6, required: true, autofocus: true, autocomplete: "one-time-code", class: "page-input page-input--code", placeholder: "000000", "aria-label": "Code" %>
+  <%= f.submit "Sign in", class: "btn btn--solid" %>
+<% end %>
+<p class="page-note"><%= link_to "Use another address", new_session_path %></p>

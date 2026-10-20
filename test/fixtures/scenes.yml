@@ -1,0 +1,13 @@
+movie:
+  household: primary
+  name: Movie
+  icon: film
+  locks_all: false
+  position: 1
+
+goodnight:
+  household: primary
+  name: Goodnight
+  icon: moon
+  locks_all: true
+  position: 2

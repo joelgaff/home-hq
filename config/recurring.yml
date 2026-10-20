@@ -1,0 +1,29 @@
+# Recurring jobs (Solid Queue). Everything runs in each household's time zone inside the jobs.
+shared: &shared
+  calendar_sync:
+    class: CalendarSyncJob
+    schedule: every 5 minutes
+  weather_sync:
+    class: WeatherSyncJob
+    schedule: every 30 minutes
+  travel_sync:
+    class: TravelSyncJob
+    schedule: every 10 minutes
+  home_state_refresh:
+    class: HomeStateRefreshJob
+    schedule: every 5 minutes
+  photo_sync:
+    class: PhotoSyncJob
+    schedule: every 6 hours
+  prune_audit_log:
+    command: "AuditEntry.prune!"
+    schedule: every day at 4am
+
+development:
+  <<: *shared
+
+production:
+  <<: *shared
+  clear_solid_queue_finished_jobs:
+    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+    schedule: every hour at minute 12

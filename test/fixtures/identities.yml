@@ -1,0 +1,8 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Emails must be distinct — identities.email carries a unique index.
+
+owner:
+  email: owner@example.com
+
+member:
+  email: member@example.com

@@ -1,0 +1,9 @@
+<%# People (plan: People view, replaces Agents). The frame shows the big avatars; tapping one opens
+    that person's page in the same frame. A phone shows "Me" (the approved mockup). %>
+<section class="view" id="view-people" data-view="people">
+  <% if frame_layout? %>
+    <%= render "people/people", person: nil %>
+  <% else %>
+    <%= render "people/me" %>
+  <% end %>
+</section>

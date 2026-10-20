@@ -1,0 +1,23 @@
+<%= form_with model: [ :settings, person ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: person %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= f.label :color, "Colour" %>
+  <div class="settings-row settings-colours">
+    <%= f.color_field :color, class: "page-colour" %>
+    <% %w[#2D5BFF #E4007C #00A36C #FFB000 #D97757 #8957E5 #111111].each do |c| %>
+      <button type="button" class="settings-swatch" style="background:<%= c %>" data-colour="<%= c %>" aria-label="<%= c %>" onclick="this.closest('form').querySelector('input[type=color]').value='<%= c %>'"></button>
+    <% end %>
+  </div>
+  <label class="settings-check"><%= f.check_box :kid %> <span>Kid (earns stars; with an email they get the app, not Settings)</span></label>
+  <%= f.label :email, "Email (their login; blank for none)" %>
+  <%= f.email_field :email, class: "page-input", autocomplete: "off" %>
+  <%= f.label :nicknames, "Nicknames in calendar titles (comma-separated)" %>
+  <%= f.text_field :nicknames, class: "page-input", placeholder: "Skid, Skiddy" %>
+  <%= render "settings/entity_field", f: f, entities: @entities, attribute: :presence_entity, label: "Presence entity (their phone in Home Assistant; blank = none)", placeholder: "person.sam" %>
+  <%= f.label :pin, person.pin? ? "PIN for unlocking from the frame (set; blank keeps it)" : "PIN for unlocking from the frame (adults; 4–8 digits)" %>
+  <%= f.password_field :pin, class: "page-input", autocomplete: "off", inputmode: "numeric", value: nil %>
+  <%= f.label :status, "Status line (until presence is live)" %>
+  <%= f.text_field :status, class: "page-input" %>
+  <%= f.submit(person.new_record? ? "Add person" : "Save", class: "btn btn--solid") %>
+<% end %>

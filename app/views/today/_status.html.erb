@@ -1,0 +1,10 @@
+<% status = @household.home_status %>
+<% secure = status.secure? %>
+<%= turbo_frame_tag "today-status", class: "h-status card", data: { go: "control" } do %>
+  <div class="label">Home</div>
+  <div class="h-st-row"><%= icon("bulb", 24) %><b class="num"><%= status.lights_on.size %></b><span>lights on</span></div>
+  <div class="h-st-row<%= " is-warn" unless secure %>"><%= icon(secure ? "lock" : "unlock", 24) %><span><%= status.security_line %></span></div>
+  <% if (thermostat = @household.thermostat) %>
+    <div class="h-st-row"><%= icon("thermo", 24) %><b class="num"><%= thermostat.current_label %>°</b><span>inside</span></div>
+  <% end %>
+<% end %>

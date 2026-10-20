@@ -1,0 +1,21 @@
+<% routine = @household.current_routine %>
+<%= turbo_frame_tag "today-chores", class: "h-chores card", data: { go: "tasks", controller: "refresh", refresh_every_value: "hour", refresh_url_value: today_path(part: "chores") } do %>
+  <% if routine.nil? %>
+    <div class="label">Chores</div>
+    <div class="h-empty">No chores yet · set up routines in Settings</div>
+  <% else %>
+    <div class="label">Chores · <%= routine.name %></div>
+    <div class="h-rings">
+      <% (@household.people.to_a + [ nil ]).each do |person| %>
+        <% list = @household.chores_for(routine, person: person) %>
+        <% next if list.empty? %>
+        <% done = list.count(&:done?) %>
+        <% style = (person || @household.family).style %>
+        <div class="h-ring<%= " is-done" if done == list.size %>" style="<%= style %>">
+          <%= ring(done, list.size, 64) %>
+          <b class="num"><%= done == list.size ? "✓" : "#{done}/#{list.size}" %></b><span><%= person ? person.name : "Anyone" %></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

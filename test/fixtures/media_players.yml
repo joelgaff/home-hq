@@ -1,0 +1,7 @@
+kitchen:
+  household: primary
+  room: kitchen
+  title: Harvest Moon
+  artist: Neil Young
+  playing: true
+  art_key: harvest-vinyl

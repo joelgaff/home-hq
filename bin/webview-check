@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Rejects CSS and JavaScript the wall frame's Android System WebView 106 cannot run
+# (docs/ui-spec.md §6). Usage: bin/webview-check PATH [PATH ...]; exits 1 on the first file set
+# with a problem and prints file:line for each one.
+#
+# Checked: 4/8-digit hex colours (the WebView rejects them even though Chrome 106 should not),
+# oklch()/color-mix(), dvh/svh/lvh units, the `inset` shorthand, CSS nesting, and ES2023+
+# JavaScript (toSorted/toReversed/toSpliced/with, findLast, RegExp `v` flag, Array.fromAsync).
+
+CSS_RULES = [
+  [ /#\h{8}\b|#\h{4}\b(?![\h-])/, "4/8-digit hex colour" ],
+  [ /\boklch\(/i, "oklch()" ],
+  [ /\bcolor-mix\(/i, "color-mix()" ],
+  [ /\d(d|s|l)vh\b/, "dvh/svh/lvh unit" ],
+  [ /(^|[\s;{])inset\s*:/, "inset shorthand" ]
+].freeze
+
+JS_RULES = [
+  [ /\.(toSorted|toReversed|toSpliced|with|findLast|findLastIndex)\(/, "ES2023 array method" ],
+  [ %r{/[^/\n]+/[dgimsuy]*v[dgimsuy]*\b}, "RegExp v flag" ],
+  [ /Array\.fromAsync\(/, "Array.fromAsync" ],
+  [ /Object\.groupBy\(|Map\.groupBy\(/, "groupBy" ]
+].freeze
+
+def css_nesting?(text)
+  # A style rule opened inside another style rule. Rules inside @media / @supports blocks are
+  # fine; the stack remembers what kind of block each `{` opened.
+  stack = []
+  at_rule = false
+  text.gsub(%r{/\*.*?\*/}m, "").each_line.with_index(1) do |line, number|
+    line.scan(/[{}]|@[\w-]+/) do |token|
+      case token
+      when "{"
+        return number if !at_rule && stack.last == :rule
+        stack.push(at_rule ? :at : :rule)
+        at_rule = false
+      when "}"
+        stack.pop
+      else
+        at_rule = true
+      end
+    end
+  end
+  nil
+end
+
+problems = []
+paths = ARGV.flat_map { |p| File.directory?(p) ? Dir.glob(File.join(p, "**", "*.{css,js}")).sort : [ p ] }
+
+# Blank out comments (keeping line numbers) so prose about oklch() is not a finding.
+def without_comments(text, css)
+  pattern = css ? %r{/\*.*?\*/}m : %r{/\*.*?\*/|(?<=^|[^:])//[^\n]*}m
+  text.gsub(pattern) { |c| c.gsub(/[^\n]/, " ") }
+end
+
+paths.each do |path|
+  css = path.end_with?(".css")
+  text = without_comments(File.read(path), css)
+  rules = css ? CSS_RULES : JS_RULES
+  text.each_line.with_index(1) do |line, number|
+    rules.each do |pattern, label|
+      next unless (match = line.match(pattern))
+      # Regexp-flag check: only when the line really contains a literal, not a URL or comment.
+      next if label == "RegExp v flag" && !line.match?(%r{=\s*/|\(\s*/|,\s*/})
+      problems << "#{path}:#{number}: #{label} (#{match[0].strip}) is not supported by WebView 106"
+    end
+  end
+  if css && (line = css_nesting?(text))
+    problems << "#{path}:#{line}: CSS nesting is not supported by WebView 106"
+  end
+end
+
+if problems.any?
+  puts problems
+  exit 1
+end
+puts "webview-check: #{paths.size} file(s) OK for WebView 106"

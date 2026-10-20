@@ -1,0 +1,17 @@
+<% household = Current.household %>
+<% upcoming = household.events.in_mode(Current.calendar_mode).for_person(person).overlapping(now, now + 7.days).includes(attendees: :person).by_start.select { |e| e.ends_at > now } %>
+<% next_up = upcoming.find { |e| !e.all_day? && e.starts_at > now } %>
+<% if next_up %>
+  <% leave = (next_up.leave_by - now) / 60 %>
+  <button class="me-needs" data-ev="<%= next_up.id %>" style="<%= next_up.color_person.style %>">
+    <% if next_up.travel? %>
+      <div class="label label--on">Needs you · <%= next_up.title %></div>
+      <div class="me-needs-h serif"><%= leave <= 0 ? "Leave now" : "Leave in #{fmt_mins(leave)}" %></div>
+      <div class="me-needs-m"><%= fmt_time(next_up.starts_at) %><%= " · #{next_up.location}" if next_up.location.present? %> · <%= next_up.travel_minutes %> min drive</div>
+    <% else %>
+      <div class="label label--on">Next up</div>
+      <div class="me-needs-h serif"><%= next_up.title %></div>
+      <div class="me-needs-m"><%= fmt_time(next_up.starts_at) %><%= " · #{next_up.location}" if next_up.location.present? %></div>
+    <% end %>
+  </button>
+<% end %>

@@ -1,0 +1,26 @@
+<%# Today / home (ui-spec §1.1): 12-col grid, never scrolls. Each piece is a Turbo Frame so it can
+    be refreshed alone: clock + hero every minute (locally), weather + lanes hourly, the cards when
+    a write changes them. %>
+<div class="home">
+  <%= render "today/clock" %>
+  <% unless frame_layout? %>
+    <%# Phone: "Me" sits top-right (the approved mockup); the person pages come with milestone 8. %>
+    <% me = current_user&.person %>
+    <a class="h-me" data-go="people" aria-label="Me" style="<%= me&.style %>"><%= me ? avatar(me, 44) : icon("person", 24) %></a>
+  <% end %>
+  <%= render "today/weather" %>
+  <%= render "today/presence" %>
+  <div class="h-main">
+    <%= render "today/hero" %>
+    <%= render "today/lanes" %>
+    <%= render "today/agenda" unless frame_layout? %>
+  </div>
+  <div class="h-side">
+    <%= render "today/photo" %>
+    <%= render "today/chores" %>
+    <div class="h-duo">
+      <%= render "today/shopping" %>
+      <%= render "today/status" %>
+    </div>
+  </div>
+</div>

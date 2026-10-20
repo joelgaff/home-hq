@@ -1,0 +1,47 @@
+<% now = Current.now %>
+<% people = @household.people.to_a %>
+<%= turbo_frame_tag "today-lanes", class: "h-lanes#{' is-many' if people.size > 5}", style: "--lanes:#{people.size}", data: { controller: "refresh", refresh_every_value: "hour", refresh_url_value: today_path(part: "lanes") } do %>
+  <% people.each do |p| %>
+    <% events = @household.timed_events_on(now, person: p).select { |e| e.ends_at > now } %>
+    <% todos = @household.open_todos_for(p) %>
+    <% timed = todos.select(&:timed?).select { |t| t.due_at > now } %>
+    <% group = todos.reject(&:timed?) %>
+    <%# Events and timed to-dos share the lane in time order (plan: People view). %>
+    <% list = (events + timed).sort_by { |x| x.is_a?(Event) ? x.starts_at : x.due_at } %>
+    <% shown = list.first(3) %>
+    <div class="h-lane" style="<%= p.style %>">
+      <div class="h-lane-head"><%= avatar(p, 30) %><b><%= p.name %></b></div>
+      <% if list.any? %>
+        <% shown.each do |x| %>
+          <% if x.is_a?(Event) %>
+            <% current = x.starts_at <= now %>
+            <button class="h-ev<%= " is-now" if current %>" data-ev="<%= x.id %>">
+              <span class="h-ev-t"><%= current ? "Now" : fmt_time(x.starts_at, ampm: false) %></span>
+              <span class="h-ev-n"><%= x.title %></span>
+            </button>
+          <% else %>
+            <%= button_to complete_todo_path(x), method: :patch, class: "h-ev h-todo", form: { data: { turbo_stream: true }, class: "h-todo-form" } do %>
+              <span class="h-ev-t"><%= fmt_time(x.due_at, ampm: false) %></span><span class="h-ev-n"><%= x.title %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% elsif group.empty? %>
+        <div class="h-free serif"><i>Free</i> the rest of the day</div>
+      <% end %>
+      <% if list.size > shown.size %>
+        <button class="h-more" data-go="calendar">+<%= list.size - shown.size %> more</button>
+      <% end %>
+      <% if group.any? %>
+        <div class="h-todos">
+          <div class="label">To do</div>
+          <% group.first(3).each do |t| %>
+            <%= button_to complete_todo_path(t), method: :patch, class: "h-ev h-todo#{' is-late' if t.overdue?}", form: { data: { turbo_stream: true }, class: "h-todo-form" } do %>
+              <span class="h-ev-t"><%= t.overdue? ? "Late" : "☐" %></span><span class="h-ev-n"><%= t.title %></span>
+            <% end %>
+          <% end %>
+          <% if group.size > 3 %><button class="h-more" data-go="people">+<%= group.size - 3 %> more</button><% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

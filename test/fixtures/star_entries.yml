@@ -1,0 +1,14 @@
+buzzsaw_opening:
+  person: buzzsaw
+  amount: 41
+  note: Opening balance
+
+buzzsaw_lunchbox:
+  person: buzzsaw
+  amount: 1
+  chore_completion: lunchbox_today
+
+skidmark_opening:
+  person: skidmark
+  amount: 57
+  note: Opening balance

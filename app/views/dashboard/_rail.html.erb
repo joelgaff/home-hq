@@ -1,0 +1,12 @@
+<%# Switches views on pointerdown for instant feel; on a demo household the clock at the bottom
+    opens the demo drawer on a 700 ms hold (ui-spec §0). The Agents slot became People (plan: Decisions). %>
+<nav class="rail" id="rail" aria-label="Sections" data-action="pointerdown->shell#railDown click->shell#railClick">
+  <% [ %w[home Today home], %w[calendar Calendar calendar], %w[tasks Chores tasks], %w[shopping Shopping cart],
+       %w[photos Photos photo], %w[control Home sliders], %w[people People people] ].each do |view, label, glyph| %>
+    <button class="rail-item" data-go="<%= view %>"><%= icon(glyph, 26) %><span><%= label %></span></button>
+  <% end %>
+  <button class="rail-clock" id="railClock" aria-label="Clock"
+          <%= tag.attributes("data-controller": "hold", "data-hold-ms-value": "700", "data-action": "hold:done->shell#openDemo") if Current.household.demo? %>>
+    <b data-shell-target="clockTime"></b><span data-shell-target="clockAmpm"></span>
+  </button>
+</nav>

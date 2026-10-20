@@ -1,0 +1,40 @@
+# Positions give the "All" order: Produce, Bakery, Meat & Fish, Dairy & Eggs, Pantry, Frozen, Snacks, Household.
+produce:
+  household: primary
+  name: Produce
+  position: 1
+
+bakery:
+  household: primary
+  name: Bakery
+  position: 2
+
+meat:
+  household: primary
+  name: Meat & Fish
+  position: 3
+
+dairy:
+  household: primary
+  name: Dairy & Eggs
+  position: 4
+
+pantry:
+  household: primary
+  name: Pantry
+  position: 5
+
+frozen:
+  household: primary
+  name: Frozen
+  position: 6
+
+snacks:
+  household: primary
+  name: Snacks
+  position: 7
+
+household_goods:
+  household: primary
+  name: Household
+  position: 8

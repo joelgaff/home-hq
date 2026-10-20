@@ -1,0 +1,21 @@
+<%# Edit one item (plan: second review 2026-10-16), in the sheet. %>
+<% household = Current.household %>
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body sheet-pad gi-edit" data-sheet-class="">
+    <div class="label">Shopping</div>
+    <h2 class="serif sheet-h"><%= @item.name %></h2>
+    <%= form_with model: @item, url: grocery_item_path(@item, shopping_context), method: :patch, class: "gi-form", data: { turbo_stream: true } do |f| %>
+      <%= f.label :name %>
+      <%= f.text_field :name, class: "page-input", autocomplete: "off" %>
+      <%= f.label :note, "Note" %>
+      <%= f.text_field :note, class: "page-input", autocomplete: "off", placeholder: "ripe, the big bag…" %>
+      <div class="gi-row">
+        <div><%= f.label :store_id, "Store" %><%= f.select :store_id, household.stores.map { |s| [ s.name, s.id ] }, {}, class: "page-select" %></div>
+        <div><%= f.label :category_id, "Aisle" %><%= f.select :category_id, household.categories.map { |c| [ c.name, c.id ] }, { include_blank: "Other" }, class: "page-select" %></div>
+        <div><%= f.label :quantity, "Qty" %><%= f.number_field :quantity, class: "page-input", min: 1 %></div>
+      </div>
+      <%= f.submit "Save", class: "btn btn--solid" %>
+    <% end %>
+    <%= button_to "Remove from the list", grocery_item_path(@item, shopping_context), method: :delete, class: "btn btn--ghost gi-remove", form: { data: { turbo_stream: true } } %>
+  </div>
+<% end %>

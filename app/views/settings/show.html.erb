@@ -1,0 +1,84 @@
+<% content_for(:title, "Settings · Home HQ") %>
+<h1 class="serif">Settings</h1>
+<nav class="settings-nav">
+  <%= link_to "People", settings_people_path %>
+  <%= link_to "Routines", settings_routines_path %>
+  <%= link_to "Chores", settings_chores_path %>
+  <%= link_to "To-dos", settings_todos_path %>
+  <%= link_to "Calendars", settings_calendar_sources_path %>
+  <%= link_to "Home", settings_home_path %>
+  <%= link_to "Stores", settings_stores_path %>
+  <%= link_to "Categories", settings_categories_path %>
+  <%= link_to "Catalogue", settings_catalog_items_path %>
+  <%= link_to "Screens", screens_path %>
+  <%= link_to "Activity", settings_activity_path %>
+</nav>
+
+<%= render "settings/setup" %>
+
+<h2 class="serif settings-h2">Household</h2>
+<%= form_with model: @household, url: settings_path, method: :patch, class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: @household %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input" %>
+  <%= f.label :time_zone %>
+  <%= f.select :time_zone, Household.time_zone_options, { selected: ActiveSupport::TimeZone[@household.time_zone.to_s]&.tzinfo&.name }, class: "page-select" %>
+  <div class="settings-row">
+    <div>
+      <%= f.label :temperature_unit, "Temperature" %>
+      <%= f.select :temperature_unit, [ [ "°C", "c" ], [ "°F", "f" ] ], {}, class: "page-select" %>
+    </div>
+    <div>
+      <%= f.label :clock_format, "Clock" %>
+      <%= f.select :clock_format, [ [ "12-hour", "12" ], [ "24-hour", "24" ] ], {}, class: "page-select" %>
+    </div>
+    <div>
+      <%= f.label :week_start, "Week starts" %>
+      <%= f.select :week_start, [ [ "Monday", "monday" ], [ "Sunday", "sunday" ] ], {}, class: "page-select" %>
+    </div>
+  </div>
+  <%= f.label :chores_paused_until, "Chores paused until (blank = not paused)" %>
+  <%= f.date_field :chores_paused_until, class: "page-input" %>
+
+  <h2 class="serif settings-h2">Integrations</h2>
+  <% if HomeAssistant.configured? %>
+    <p class="page-note">Home Assistant is connected. Weather and drive times come from it.</p>
+  <% else %>
+    <p class="page-note">Home Assistant is not connected: set its URL and a long-lived token in the credentials (or HOME_ASSISTANT_URL and HOME_ASSISTANT_TOKEN). Until then the weather comes from the place below and events have no drive times.</p>
+  <% end %>
+  <%= f.label :weather_location, "Weather location (a city and region, e.g. Asheville, NC)" %>
+  <%= f.text_field :weather_location, class: "page-input", autocomplete: "off" %>
+  <% if @household.weather_located? && @household.errors.empty? %><p class="page-note">Weather from Open-Meteo for <%= @household.weather_location %><%= " (Home Assistant's weather entity wins while it is set)" if @household.weather_entity.present? %>.</p><% end %>
+  <%= f.label :rain_keywords, "Outdoor words (comma-separated): rain later and one of these in an event ahead says \"Pack a rain jacket for …\"" %>
+  <%= f.text_field :rain_keywords, class: "page-input", autocomplete: "off" %>
+  <%= f.label :weather_entity, "Weather entity from Home Assistant (e.g. weather.home; blank = use the location)" %>
+  <%= f.text_field :weather_entity, class: "page-input", autocomplete: "off" %>
+  <%= f.label :home_address, "Home address (drive times start here)" %>
+  <%= f.text_field :home_address, class: "page-input", autocomplete: "off" %>
+  <%= f.label :water_valve_entity, "Water main valve entity (leak alert's shut-off; blank = none)" %>
+  <%= f.text_field :water_valve_entity, class: "page-input", autocomplete: "off", placeholder: "valve.water_main" %>
+  <%= f.label :travel_region, "Waze region" %>
+  <%= f.select :travel_region, Household::TRAVEL_REGIONS.invert.to_a, {}, class: "page-select" %>
+
+  <h2 class="serif settings-h2">Photos</h2>
+  <% if Immich.configured? %>
+    <% albums = Immich.albums || [] %>
+    <p class="page-note">Immich is connected. Tick the albums the slideshow draws from; "on this day" across the years is added on its own.</p>
+    <div class="settings-checks">
+      <%= hidden_field_tag "household[immich_album_ids][]", "" %>
+      <% albums.each do |a| %>
+        <label class="settings-check"><%= check_box_tag "household[immich_album_ids][]", a["id"], @household.immich_album_ids.include?(a["id"]), id: "album_#{a['id']}" %> <span><%= a["albumName"] %> (<%= a["assetCount"] %>)</span></label>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="page-note">Immich is not connected: set immich.url and immich.api_key in the credentials (or IMMICH_URL and IMMICH_API_KEY). Until then the slideshow shows the demo photos.</p>
+  <% end %>
+  <%= f.submit "Save", class: "btn btn--solid" %>
+<% end %>
+<% if Immich.configured? %>
+  <div class="settings-row">
+    <%= button_to "Sync photos now", sync_settings_photos_path, method: :post, class: "settings-btn", form: { data: { turbo: false } } %>
+    <%= button_to "Clear the demo photos", settings_photos_path, method: :delete, class: "settings-btn settings-btn--danger", form: { data: { turbo_confirm: "Remove the demo photos? Immich photos stay." } } %>
+  </div>
+<% end %>
+<p class="page-note"><%= link_to "Back to the dashboard", root_path, data: { turbo: false } %></p>

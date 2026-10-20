@@ -1,0 +1,64 @@
+# Delegated types: the device row carries name/room, the type row the state.
+pendants:
+  household: primary
+  room: kitchen
+  name: Pendants
+  position: 1
+  deviceable: pendants (Light)
+
+island:
+  household: primary
+  room: kitchen
+  name: Island
+  position: 2
+  deviceable: island (Light)
+
+shade:
+  household: primary
+  room: kitchen
+  name: Window Shade
+  position: 3
+  deviceable: shade (Blind)
+
+floor_lamp:
+  household: primary
+  room: living
+  name: Floor Lamp
+  position: 1
+  deviceable: floor_lamp (Light)
+
+front_door:
+  household: primary
+  room: entry
+  name: Front Door
+  position: 1
+  deviceable: front_door (DoorLock)
+
+porch:
+  household: primary
+  room: entry
+  name: Porch
+  position: 2
+  deviceable: porch (Light)
+
+garage:
+  household: primary
+  room: entry
+  name: Garage
+  position: 3
+  deviceable: garage (GarageDoor)
+
+side_door:
+  household: primary
+  room: entry
+  name: Side Door
+  position: 4
+  deviceable: side_door (DoorLock)
+
+string_lights:
+  household: primary
+  room: yard
+  name: String Lights
+  position: 1
+  flaky: true
+  deviceable: string_lights (Light)

@@ -1,0 +1,25 @@
+<%# A person's to-dos today (plan: People view): tappable; done ones struck through with Undo. %>
+<% todos = Current.household.todos_today_for(person) %>
+<div class="me-section me-todos my-todos">
+  <div class="label">To do</div>
+  <% if todos.any? %>
+    <% todos.each do |t| %>
+      <% if t.done? %>
+        <%= button_to undo_todo_path(t), method: :patch, class: "me-todo my-todo is-done", form: { data: { turbo_stream: true }, class: "todo-form" } do %>
+          <span class="me-ch-emoji">☑</span><span class="me-ch-text"><b><%= t.title %></b><small>Done<%= " · #{t.stars}★" if t.stars.positive? %> · tap to undo</small></span>
+        <% end %>
+      <% else %>
+        <%= button_to complete_todo_path(t), method: :patch, params: { person_id: person.id }, class: "me-todo my-todo#{' is-overdue' if t.overdue?}", form: { data: { turbo_stream: true }, class: "todo-form" } do %>
+          <span class="me-ch-emoji">☐</span><span class="me-ch-text"><b><%= t.title %></b><small><%= [ t.when_label, ("#{t.stars}★" if t.stars.positive?) ].compact.join(" · ").presence || "whenever" %></small></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <div class="me-none serif"><i>Nothing</i> on the list</div>
+  <% end %>
+  <%= form_with url: todos_path, class: "todo-add", data: { turbo_stream: true } do |f| %>
+    <%= hidden_field_tag "todo[person_id]", person.id %>
+    <%= text_field_tag "todo[title]", nil, class: "todo-add-field", placeholder: "Add a to-do…", autocomplete: "off" %>
+    <%= f.submit "Add", class: "todo-add-btn" %>
+  <% end %>
+</div>

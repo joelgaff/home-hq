@@ -1,0 +1,16 @@
+<%# Ambient (ui-spec §1.8): a full-screen slideshow with the big clock, weather, next event and
+    who is home. Tap → day + home. The clock ticks locally; the info frame refreshes hourly and
+    when the next event starts. %>
+<% now = Current.now %>
+<div class="ambient" id="ambient" data-controller="ambient" data-action="shell:mode@document->ambient#mode click->ambient#tap">
+  <div class="amb-stage" data-controller="slideshow" data-slideshow-layout-value="cover" data-slideshow-captions-value="false"
+       data-slideshow-interval-value="14000" data-slideshow-photos-value="<%= Current.household.slideshow_pool.map(&:as_slide).to_json %>"></div>
+  <div class="amb-scrim"></div>
+  <div class="amb-info" data-ambient-target="info">
+    <div class="amb-clock" data-controller="clock" data-clock-long-value="true" data-action="shell:minute@document->clock#render">
+      <div class="amb-time num" data-clock-target="time"><%= fmt_time(now, ampm: false) %></div>
+      <div class="amb-date" data-clock-target="date"><%= fmt_day(now) %>, <%= fmt_month(now) %> <%= now.day %></div>
+    </div>
+    <%= render "today/ambient_info" %>
+  </div>
+</div>

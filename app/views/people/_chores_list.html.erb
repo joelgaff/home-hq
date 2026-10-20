@@ -1,0 +1,16 @@
+<% household = Current.household %>
+<% chores = household.loaded_chores.select { |c| c.person_id == person.id }.sort_by(&:sort_key) %>
+<div class="me-section me-chores">
+  <div class="label">Your chores today</div>
+  <% if chores.any? %>
+    <% chores.each do |c| %>
+      <% late = c.overdue? && !c.done? %>
+      <button class="me-ch<%= " is-done" if c.done? %><%= " is-overdue" if late %>" data-go="tasks">
+        <span class="me-ch-emoji"><%= c.emoji %></span>
+        <span class="me-ch-text"><b><%= c.title %></b><% if late %><small class="ch-late">Overdue</small><% else %><small><%= c.routine.name %></small><% end %></span>
+      </button>
+    <% end %>
+  <% else %>
+    <div class="me-none serif"><i>Nothing</i> assigned today</div>
+  <% end %>
+</div>

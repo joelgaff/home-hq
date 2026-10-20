@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Home HQ</title>
+    <%# The wall frame is a fixed 1280×800 stage (ui-spec §5); a person gets the device-width app,
+        whose phone layer (dashboard/phone.css) applies under 700 px. %>
+    <% if frame_layout? %>
+      <meta name="viewport" content="width=1280, initial-scale=1, user-scalable=no">
+    <% else %>
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <% end %>
+    <meta name="theme-color" content="#F2EEE6">
+    <meta name="application-name" content="Home HQ">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Home HQ">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="manifest" href="<%= frame_layout? ? "/manifest.json?layout=frame" : "/manifest.json" %>">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&display=swap">
+    <%# Order matters for the cascade: tokens, base, then the views. %>
+    <%= stylesheet_link_tag "dashboard/tokens", "dashboard/base", "dashboard/home", "dashboard/calendar", "dashboard/tasks",
+          "dashboard/shopping", "dashboard/photos", "dashboard/control", "dashboard/ambient", "dashboard/people", "dashboard/offline", "dashboard/port", "dashboard/phone", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= yield :head %>
+  </head>
+
+  <body data-layout="<%= frame_layout? ? "frame" : "app" %>">
+    <%= yield %>
+    <script>
+      // Wall-display self-healing: if the app failed to boot (a stale page right after a deploy, a
+      // network blip), reload until it starts.
+      setTimeout(function () { if (!document.getElementById("stage").hasAttribute("data-shell-ready")) location.reload(); }, 10000);
+    </script>
+  </body>
+</html>

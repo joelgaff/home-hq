@@ -1,0 +1,14 @@
+<p class="page-note"><%= link_to "← Settings", settings_path %></p>
+<h1 class="serif">Screens</h1>
+
+<% if @screens.any? %>
+  <ul>
+    <% @screens.each do |screen| %>
+      <li><%= link_to screen.name, screen %> · <%= screen.enrolled? ? "Enrolled" : "Waiting for the device" %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No screens yet.</p>
+<% end %>
+
+<%= link_to "Add a screen", new_screen_path %>

@@ -1,0 +1,17 @@
+<% household = Current.household %>
+<% status = household.home_status %>
+<% lights = status.lights_on %>
+<% secure = status.secure? %>
+<% sec_big, sec_small = status.security_summary %>
+<% thermostat = household.thermostat %>
+<% player = household.media_player %>
+<div class="hc-sum" id="control-sum">
+  <button class="sum<%= " sum--warm" if lights.any? %>" data-sum="lights" data-action="click->control#summary"><span class="label">Lights</span><b class="num"><%= lights.size %></b><small>on in <%= status.rooms_lit.size %> rooms</small></button>
+  <button class="sum<%= " sum--warn" unless secure %>" data-sum="security" data-action="click->control#summary"><span class="label">Security</span><b class="num"><%= sec_big %></b><small><%= sec_small %></small></button>
+  <% if thermostat %>
+    <button class="sum" data-sum="climate" data-action="click->control#summary"><span class="label">Climate</span><b class="num"><%= thermostat.current_label %>°</b><small><%= thermostat.summary_line %></small></button>
+  <% end %>
+  <% if player %>
+    <button class="sum" data-sum="media" data-action="click->control#summary"><span class="label">Media</span><b class="num"><%= player.playing? ? "Playing" : "Paused" %></b><small><%= player.room_name %> speaker</small></button>
+  <% end %>
+</div>

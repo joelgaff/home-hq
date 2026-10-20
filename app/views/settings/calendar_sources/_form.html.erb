@@ -1,0 +1,22 @@
+<%= form_with model: [ :settings, source ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: source %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true, placeholder: "Family calendar" %>
+  <%= f.label :url, "Feed address (ICS or webcal)" %>
+  <%= f.url_field :url, class: "page-input", autocomplete: "off", placeholder: "https://calendar.google.com/calendar/ical/…/basic.ics" %>
+  <%= f.label :person_ids, "For (nobody ticked = everyone)" %>
+  <div class="settings-checks">
+    <%= hidden_field_tag "calendar_source[person_ids][]", "" %>
+    <% @household.people.each do |p| %>
+      <label class="settings-check"><%= check_box_tag "calendar_source[person_ids][]", p.id, source.people.include?(p), id: "person_#{p.id}" %> <span><%= p.name %></span></label>
+    <% end %>
+  </div>
+  <div class="settings-row">
+    <div>
+      <%= f.label :refresh_minutes, "Refresh every (minutes)" %>
+      <%= f.number_field :refresh_minutes, class: "page-input", min: 1, step: 1 %>
+    </div>
+  </div>
+  <label class="settings-check"><%= f.check_box :enabled %> <span>Enabled</span></label>
+  <%= f.submit(source.new_record? ? "Add calendar" : "Save", class: "btn btn--solid") %>
+<% end %>

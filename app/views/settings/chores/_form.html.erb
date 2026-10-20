@@ -1,0 +1,16 @@
+<%= form_with model: [ :settings, chore ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: chore %>
+  <div class="settings-row settings-row--emoji">
+    <div><%= f.label :emoji %><%= f.text_field :emoji, class: "page-input page-input--emoji", maxlength: 4 %></div>
+    <div><%= f.label :title %><%= f.text_field :title, class: "page-input", autofocus: true %></div>
+  </div>
+  <div class="settings-row">
+    <div><%= f.label :routine_id, "Routine" %><%= f.collection_select :routine_id, @household.routines, :id, :name, {}, class: "page-select" %></div>
+    <div><%= f.label :person_id, "Who" %><%= f.collection_select :person_id, @household.people, :id, :name, { include_blank: "Anyone" }, class: "page-select" %></div>
+  </div>
+  <%= f.label :stars, "Stars (kids)" %>
+  <%= f.number_field :stars, in: 0..10, class: "page-input" %>
+  <%= f.label :weekdays, "Days" %>
+  <%= render "settings/weekdays", record: chore, param: "chore" %>
+  <%= f.submit(chore.new_record? ? "Add chore" : "Save", class: "btn btn--solid") %>
+<% end %>

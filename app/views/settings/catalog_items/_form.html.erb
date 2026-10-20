@@ -1,0 +1,9 @@
+<%= form_with model: [ :settings, item ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: item %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <%= f.label :category_id, "Category" %>
+  <%= f.collection_select :category_id, @household.categories, :id, :name, { include_blank: "Other" }, class: "page-select" %>
+  <label class="settings-check"><%= f.check_box :usual %> <span>Usual (a tap-to-add tile)</span></label>
+  <%= f.submit(item.new_record? ? "Add item" : "Save", class: "btn btn--solid") %>
+<% end %>

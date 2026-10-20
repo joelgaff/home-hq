@@ -1,0 +1,5 @@
+<% now = Current.now %>
+<%= turbo_frame_tag "today-clock", class: "h-clock", data: { go: "calendar", controller: "clock", action: "shell:minute@document->clock#render" } do %>
+  <div class="h-time num"><span data-clock-target="time"><%= fmt_time(now, ampm: false) %></span><span class="h-ampm" data-clock-target="ampm"><%= fmt_ampm(now) %></span></div>
+  <div class="h-date"><b data-clock-target="day"><%= fmt_day(now) %></b> <span data-clock-target="date"><%= fmt_month(now) %> <%= now.day %></span></div>
+<% end %>

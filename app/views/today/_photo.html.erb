@@ -1,0 +1,8 @@
+<%# Photo tile: a cover slideshow (12 s) with the "On this day" caption, paused while hidden. %>
+<%= turbo_frame_tag "today-photo", class: "h-photo", data: { go: "photos" } do %>
+  <div class="h-photo-stage" data-controller="slideshow" data-slideshow-layout-value="cover" data-slideshow-captions-value="false"
+       data-slideshow-interval-value="12000" data-slideshow-photos-value="<%= @household.slideshow_pool.map(&:as_slide).to_json %>"
+       data-slideshow-caption-outlet-selector-value="#today-photo-cap"
+       data-action="view:show@document->slideshow#resume view:hide@document->slideshow#pause"></div>
+  <div class="h-photo-cap" id="today-photo-cap"></div>
+<% end %>

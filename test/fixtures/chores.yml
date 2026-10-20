@@ -1,0 +1,79 @@
+# After-school chores from Wes's data (ui-spec §1.3). `person` empty = Anyone.
+homework:
+  household: primary
+  routine: after_school
+  person: buzzsaw
+  title: Homework
+  emoji: 📚
+  stars: 2
+  position: 1
+
+soccer_bag:
+  household: primary
+  routine: after_school
+  person: buzzsaw
+  title: Pack soccer bag
+  emoji: ⚽
+  stars: 1
+  position: 2
+
+unpack_lunchbox:
+  household: primary
+  routine: after_school
+  person: buzzsaw
+  title: Unpack lunchbox
+  emoji: 🥪
+  stars: 1
+  position: 3
+
+read:
+  household: primary
+  routine: after_school
+  person: skidmark
+  title: Read for 20 min
+  emoji: 📖
+  stars: 2
+  position: 1
+
+recycling:
+  household: primary
+  routine: morning
+  person: wes
+  title: Take out recycling
+  emoji: ♻️
+  stars: 0
+  position: 1
+
+dishwasher:
+  household: primary
+  routine: after_school
+  title: Empty dishwasher
+  emoji: 🍽️
+  stars: 2
+  position: 1
+
+water_plants:
+  household: primary
+  routine: after_school
+  title: Water the plants
+  emoji: 🪴
+  stars: 1
+  position: 2
+
+make_bed:
+  household: primary
+  routine: morning
+  person: buzzsaw
+  title: Make bed
+  emoji: 🛏️
+  stars: 1
+  position: 1
+
+set_table:
+  household: primary
+  routine: evening
+  person: buzzsaw
+  title: Set the table
+  emoji: 🍴
+  stars: 1
+  position: 1

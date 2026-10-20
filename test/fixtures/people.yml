@@ -1,0 +1,41 @@
+# Wes's demo family shape: two adults, two kids (ui-spec §2). Positions order the lanes.
+wes:
+  household: primary
+  name: Wes
+  color: "#2D5BFF"
+  ink: "#FFFFFF"
+  kid: false
+  home: false
+  status: Driving home
+  eta_minutes: 12
+  position: 1
+
+claudia:
+  household: primary
+  name: Claudia
+  color: "#E4007C"
+  ink: "#FFFFFF"
+  kid: false
+  home: false
+  status: At the office
+  position: 2
+
+buzzsaw:
+  household: primary
+  name: Buzzsaw
+  color: "#00A36C"
+  ink: "#FFFFFF"
+  kid: true
+  home: true
+  status: Home
+  position: 3
+
+skidmark:
+  household: primary
+  name: Skidmark
+  color: "#FFB000"
+  ink: "#111111"
+  kid: true
+  home: true
+  status: Home
+  position: 4

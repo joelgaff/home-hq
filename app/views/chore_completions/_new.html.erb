@@ -1,0 +1,14 @@
+<%# "Who did it?" for an Anyone chore: a big avatar per person, each a form. %>
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body sheet-pad" data-sheet-class="">
+    <div class="label"><%= @chore.emoji %> <%= @chore.title %></div>
+    <h2 class="serif sheet-h">Who did it?</h2>
+    <div class="add-who add-who--big">
+      <% @household.people.each do |p| %>
+        <%= button_to chore_completions_path(@chore, routine: @routine.id), params: { person_id: p.id }, class: "who-btn", style: p.style, form: { data: { turbo_stream: true } } do %>
+          <%= avatar(p, 88) %><span><%= p.name %></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

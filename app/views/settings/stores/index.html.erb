@@ -1,0 +1,16 @@
+<% content_for(:title, "Stores · Settings") %>
+<%= render "settings/header", title: "Stores", add_path: new_settings_store_path %>
+<p class="page-note">The first store is where new items go. Open a store for its aisle order.</p>
+<ul class="settings-list">
+  <% @stores.each do |s| %>
+    <li class="settings-item">
+      <div class="settings-text"><b><%= link_to s.name, settings_store_path(s) %></b><small><%= s.grocery_items.open.count %> on the list · <%= link_to "aisle order", settings_store_path(s) %></small></div>
+      <div class="settings-actions">
+        <%= button_to "↑", move_settings_store_path(s), method: :patch, params: { direction: "up" }, class: "settings-btn", "aria-label": "Move up", form: { data: { turbo: false } } %>
+        <%= button_to "↓", move_settings_store_path(s), method: :patch, params: { direction: "down" }, class: "settings-btn", "aria-label": "Move down", form: { data: { turbo: false } } %>
+        <%= link_to "Edit", edit_settings_store_path(s), class: "settings-btn" %>
+        <%= button_to "Remove", settings_store_path(s), method: :delete, class: "settings-btn settings-btn--danger", form: { data: { turbo_confirm: "Remove #{s.name}?" } } %>
+      </div>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,8 @@
+<% content_for(:title, "Catalogue · Settings") %>
+<%= render "settings/header", title: "Catalogue", add_path: new_settings_catalog_item_path %>
+<p class="page-note">Things the household buys: they name and categorise new list items and feed the suggestions. Usuals are the tap-to-add tiles.</p>
+<ul class="settings-list">
+  <% @items.each do |i| %>
+    <%= render "settings/row", title: i.name, sub: [ i.category&.name || "Other", ("usual" if i.usual?) ].compact.join(" · "), edit_path: edit_settings_catalog_item_path(i), move_path: move_settings_catalog_item_path(i), delete_path: settings_catalog_item_path(i) %>
+  <% end %>
+</ul>

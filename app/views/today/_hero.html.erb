@@ -1,0 +1,51 @@
+<%# "Next up": the earliest remaining leave-by today. The countdown and the leave pill tick
+    locally (countdown controller); the frame reloads itself once this event starts, when the
+    next one takes over. %>
+<% now = Current.now %>
+<% event = @household.next_event(at: now) %>
+<% refresh_at = event ? event.starts_at : now.tomorrow.beginning_of_day %>
+<%= turbo_frame_tag "today-hero", class: "h-hero-slot", data: { controller: "refresh", refresh_at_value: ms(refresh_at), refresh_url_value: today_path(part: "hero") } do %>
+  <% if event %>
+    <% person = event.color_person %>
+    <% mins = (event.starts_at - now) / 60 %>
+    <% leave = (event.leave_by - now) / 60 %>
+    <button class="h-hero" style="<%= person.style %>" data-ev="<%= event.id %>"
+            data-controller="countdown" data-countdown-start-value="<%= ms(event.starts_at) %>"
+            data-countdown-leave-value="<%= event.travel? ? ms(event.leave_by) : '' %>"
+            data-action="shell:minute@document->countdown#render">
+      <div class="h-hero-main">
+        <div class="label label--on">Next up · <%= who_text(event) %></div>
+        <div class="h-hero-title serif"><%= event.title %></div>
+        <div class="h-hero-meta"><%= fmt_range(event.starts_at, event.ends_at) %><%= " · #{event.location}" if event.location.present? %></div>
+        <div class="h-hero-foot">
+          <%= dots(event.attending_people, 22) if event.attendees.size > 1 %>
+          <span data-countdown-target="pill">
+            <% if event.travel? %>
+              <% if leave <= 0 %>
+                <span class="pill pill--alert"><i class="pulse"></i>Leave now</span>
+              <% else %>
+                <span class="pill<%= " pill--soon" if leave <= 15 %>"><%= icon("car", 20) %>Leave in <%= fmt_mins(leave) %></span>
+              <% end %>
+            <% end %>
+          </span>
+        </div>
+      </div>
+      <div class="h-hero-count num" data-countdown-target="count">
+        <% if mins < 100 %>
+          <%= mins.round %><small>min</small>
+        <% else %>
+          <%= fmt_time(event.starts_at, ampm: false) %><small><%= fmt_ampm(event.starts_at) %></small>
+        <% end %>
+      </div>
+    </button>
+  <% else %>
+    <% tomorrow = @household.timed_events_on(now + 1.day).first %>
+    <div class="h-hero h-hero--empty" data-go="calendar">
+      <div class="label label--light">Rest of today</div>
+      <div class="h-hero-title serif">Nothing else scheduled.<br><i>Enjoy the quiet.</i></div>
+      <% if tomorrow %>
+        <div class="h-hero-meta">Tomorrow starts with <b><%= tomorrow.title %></b> at <%= fmt_time(tomorrow.starts_at) %></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

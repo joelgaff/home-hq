@@ -1,0 +1,8 @@
+<%# An entity id field (`attribute`, entity_id by default) with the hub's entities as suggestions
+    when it is connected. %>
+<% attribute = local_assigns.fetch(:attribute, :entity_id) %>
+<%= f.label attribute, local_assigns.fetch(:label, "Home Assistant entity (blank = demo)") %>
+<%= f.text_field attribute, class: "page-input", autocomplete: "off", list: ("entities" if entities.any?), placeholder: local_assigns.fetch(:placeholder, "light.kitchen") %>
+<% if entities.any? %>
+  <datalist id="entities"><% entities.each do |label, id| %><option value="<%= id %>"><%= label %></option><% end %></datalist>
+<% end %>

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Restores the production database from its R2 replica into the app's Docker volume on a server,
+# the step that moves the app to another machine (README: "Moving to another machine"). Run it
+# before the first deploy there, or again later with the app stopped (it replaces the database;
+# never run it while an app is writing to that volume). R2 settings come
+# from .env (bin/secrets-pull); the server from HOME_DASHBOARD_SERVER and HOME_DASHBOARD_SSH_USER.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+set -a; [ -f .env ] && . ./.env; set +a
+server="${HOME_DASHBOARD_SERVER:?set HOME_DASHBOARD_SERVER}"
+user="${HOME_DASHBOARD_SSH_USER:-root}"
+: "${LITESTREAM_BUCKET:?run bin/secrets-pull first}" "${LITESTREAM_ENDPOINT:?}" "${LITESTREAM_ACCESS_KEY_ID:?}" "${LITESTREAM_SECRET_ACCESS_KEY:?}"
+volume="home_dashboard_storage"
+
+echo "restore-db: restoring production.sqlite3 from R2 into volume $volume on $server"
+scp -q config/litestream.yml "$user@$server:/tmp/litestream-restore.yml"
+ssh "$user@$server" "docker volume create $volume >/dev/null && \
+  docker run --rm -v $volume:/rails/storage alpine sh -c 'rm -f /rails/storage/production.sqlite3 /rails/storage/production.sqlite3-wal /rails/storage/production.sqlite3-shm /rails/storage/production.sqlite3.tmp-wal /rails/storage/production.sqlite3.tmp-shm' && \
+  docker run --rm -v $volume:/rails/storage -v /tmp/litestream-restore.yml:/etc/litestream.yml:ro \
+    -e LITESTREAM_ACCESS_KEY_ID='$LITESTREAM_ACCESS_KEY_ID' -e LITESTREAM_SECRET_ACCESS_KEY='$LITESTREAM_SECRET_ACCESS_KEY' \
+    -e LITESTREAM_BUCKET='$LITESTREAM_BUCKET' -e LITESTREAM_ENDPOINT='$LITESTREAM_ENDPOINT' \
+    litestream/litestream:0.3 restore -config /etc/litestream.yml -if-replica-exists -o /rails/storage/production.sqlite3 /rails/storage/production.sqlite3 && \
+  rm -f /tmp/litestream-restore.yml && \
+  docker run --rm -v $volume:/rails/storage alpine sh -c 'chown -R 1000:1000 /rails/storage && ls -la /rails/storage'"
+echo "restore-db: done. Deploy with bin/kamal setup (first time there) or bin/kamal deploy."

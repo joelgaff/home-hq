@@ -1,0 +1,14 @@
+<%# Lays out one lane's events with the overlap rules; a collapsed group becomes a "+N more" block. %>
+<% CalendarLayout.place(events).each do |item| %>
+  <% w = 100.0 / item.cols %>
+  <% left = item.col * w %>
+  <% pos = "left:calc(#{format('%g', left)}% + 2px);width:calc(#{format('%g', w)}% - 4px)" %>
+  <% if item.more? %>
+    <% top = grid_y(item.starts_at) %>
+    <% h = [ 30, grid_y(item.ends_at) - top - 3 ].max %>
+    <button class="ev ev--more" data-more="<%= item.events.map(&:id).join(",") %>" style="top:<%= px(top) %>;height:<%= px(h) %>;<%= pos %>">+<%= item.events.size %><small>more</small></button>
+  <% else %>
+    <% top, h = grid_box(item.event, day) %>
+    <%= render "calendar/event_block", event: item.event, now: now, lane: lane, half: item.cols > 1, style: "top:#{px(top)};height:#{px(h)};#{pos}" %>
+  <% end %>
+<% end %>

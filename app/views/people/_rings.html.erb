@@ -1,0 +1,17 @@
+<%# A kid's progress today (plan: People view "My day"): the whole day, each routine, the stars. %>
+<% household = Current.household %>
+<% today = now.to_date %>
+<% mine = household.loaded_chores.select { |c| c.person_id == person.id && c.due_on?(today) } %>
+<% done = mine.count(&:done?) %>
+<% earned_today = person.star_entries.where(created_at: today.in_time_zone.all_day).sum(:amount) %>
+<div class="my-rings">
+  <div class="my-day-ring"><%= ring(done, [ mine.size, 1 ].max, 120) %><span class="num"><%= done %>/<%= mine.size %></span><span class="label">today</span></div>
+  <div class="my-routines">
+    <% household.active_routines(on: today).each do |r| %>
+      <% list = mine.select { |c| c.routine_id == r.id } %>
+      <% d = list.count(&:done?) %>
+      <div class="my-routine<%= " is-done" if list.any? && d == list.size %>"><%= ring(d, [ list.size, 1 ].max, 56) %><b><%= r.name %></b><small class="num"><%= list.any? ? "#{d}/#{list.size}" : "–" %></small></div>
+    <% end %>
+  </div>
+  <div class="my-stars"><%= icon("star", 22, "i--fill") %><b class="num">+<%= earned_today %></b> today · <span class="num"><%= person.stars %></span> ★ total</div>
+</div>

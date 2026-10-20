@@ -1,0 +1,19 @@
+pendants:
+  "on": true
+  level: 80
+
+island:
+  "on": false
+  level: 100
+
+floor_lamp:
+  "on": true
+  level: 45
+
+porch:
+  "on": true
+  level: 100
+
+string_lights:
+  "on": false
+  level: 100

@@ -1,0 +1,14 @@
+# Litestream: continuous replication of the primary SQLite database to Cloudflare R2.
+# The cache, queue and cable databases are disposable and are not replicated.
+# Values come from the accessory's environment (see config/deploy.yml and .kamal/secrets).
+dbs:
+  - path: /rails/storage/production.sqlite3
+    replicas:
+      - type: s3
+        bucket: ${LITESTREAM_BUCKET}
+        path: production.sqlite3
+        endpoint: ${LITESTREAM_ENDPOINT}
+        region: auto
+        force-path-style: true
+        retention: 720h
+        sync-interval: 10s

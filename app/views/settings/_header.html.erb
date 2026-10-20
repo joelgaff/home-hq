@@ -1,0 +1,8 @@
+<%# title, add_path (optional), back (default settings) %>
+<div class="settings-head">
+  <div>
+    <p class="page-note"><%= link_to "← Settings", local_assigns.fetch(:back, settings_path) %></p>
+    <h1 class="serif"><%= title %></h1>
+  </div>
+  <% if local_assigns[:add_path] %><%= link_to "+ Add", add_path, class: "btn btn--ghost settings-add" %><% end %>
+</div>

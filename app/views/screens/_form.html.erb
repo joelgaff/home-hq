@@ -1,0 +1,18 @@
+<%= form_with model: screen, class: "page-form settings-form" do |f| %>
+  <% if screen.errors.any? %>
+    <p class="page-flash page-flash--alert"><%= screen.errors.full_messages.to_sentence %></p>
+  <% end %>
+  <%= f.label :name, "Name (e.g. Kitchen frame)" %>
+  <%= f.text_field :name, class: "page-input", autofocus: screen.new_record? %>
+  <%= f.label :default_view, "Starts on (and returns to when idle)" %>
+  <%= f.select :default_view, Screen::VIEWS.invert.to_a, {}, class: "page-select" %>
+  <%= f.label :night_from, "Night from" %>
+  <%= f.select :night_from, Screen.hour_options, {}, class: "page-select" %>
+  <%= f.label :night_to, "Night until (the same hour as “from” turns night off)" %>
+  <%= f.select :night_to, Screen.hour_options, {}, class: "page-select" %>
+  <%= f.label :night_style, "At night" %>
+  <%= f.select :night_style, Screen::NIGHT_STYLES.invert.to_a, {}, class: "page-select" %>
+  <%= f.label :reload_hour, "Nightly reload (keeps the frame's old browser healthy)" %>
+  <%= f.select :reload_hour, Screen.hour_options, { include_blank: "Never" }, class: "page-select" %>
+  <%= f.submit(screen.new_record? ? "Add screen" : "Save", class: "btn btn--solid") %>
+<% end %>

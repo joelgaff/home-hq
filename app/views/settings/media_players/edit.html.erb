@@ -1,0 +1,10 @@
+<% content_for(:title, "Media · Settings") %>
+<p class="page-note"><%= link_to "← Home", settings_home_path %></p>
+<h1 class="serif">Now playing</h1>
+<%= form_with model: @player, url: settings_media_player_path, method: :patch, class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: @player %>
+  <%= render "settings/entity_field", f: f, entities: @entities, label: "Speaker entity (blank = demo)", placeholder: "media_player.kitchen" %>
+  <%= f.label :room_id, "Room" %>
+  <%= f.select :room_id, @household.rooms.map { |r| [ r.name, r.id ] }, { include_blank: "No room" }, class: "page-select" %>
+  <%= f.submit "Save", class: "btn btn--solid" %>
+<% end %>

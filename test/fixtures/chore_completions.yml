@@ -1,0 +1,16 @@
+# Buzzsaw unpacked the lunchbox today; made the bed yesterday (Tue) but not the day before (Mon).
+lunchbox_today:
+  chore: unpack_lunchbox
+  completed_on: 2026-10-14
+
+bed_tuesday:
+  chore: make_bed
+  completed_on: 2026-10-13
+
+bed_sunday:
+  chore: make_bed
+  completed_on: 2026-10-11
+
+table_tuesday:
+  chore: set_table
+  completed_on: 2026-10-13

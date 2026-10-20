@@ -1,0 +1,45 @@
+tofino:
+  household: primary
+  person: claudia
+  image_key: tofino-surf
+  orientation: landscape
+  taken_on: 2021-10-14
+  place: Tofino, BC
+  album: tofino
+
+cottage:
+  household: primary
+  person: wes
+  image_key: cottage-dock
+  orientation: landscape
+  taken_on: 2023-08-12
+  place: Lake of Bays
+  album: cottage
+  favorite: true
+
+kite_a:
+  household: primary
+  person: claudia
+  image_key: maya-kite
+  orientation: portrait
+  taken_on: 2024-05-19
+  place: Humber Bay Park
+  album: spring24
+
+kite_b:
+  household: primary
+  person: wes
+  image_key: otto-kite
+  orientation: portrait
+  taken_on: 2024-05-19
+  place: Humber Bay Park
+  album: spring24
+
+pancakes:
+  household: primary
+  person: buzzsaw
+  image_key: pancakes
+  orientation: portrait
+  taken_on: 2026-03-14
+  place: Home
+  album: pancakes

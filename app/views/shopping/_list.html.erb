@@ -1,0 +1,47 @@
+<% household = Current.household %>
+<% flash_id = local_assigns[:flash_id] %>
+<% all_open = household.grocery_items.open %>
+<% groups = household.shopping_groups(store: store) %>
+<% open_count = store ? all_open.where(store: store).count : all_open.count %>
+<% checked = household.grocery_items.checked.in_order.to_a %>
+<% checked = checked.select { |g| g.store == store } if store %>
+<% context = { store: store&.id, drawer: (drawer ? 1 : nil) }.compact %>
+<%= turbo_frame_tag "shopping", data: { store: store&.id, drawer: (drawer ? 1 : 0) } do %>
+  <header class="s-head">
+    <div><div class="label">Shared list</div><h1 class="serif">Groceries</h1></div>
+    <div class="s-count"><span class="num"><%= open_count %></span> to get</div>
+    <div class="seg s-stores">
+      <%= link_to shopping_path(drawer: context[:drawer]), class: (store ? "" : "is-on"), data: { store: "all" } do %>All <span class="num"><%= all_open.count %></span><% end %>
+      <% household.stores.each do |s| %>
+        <%= link_to shopping_path(store: s.id, drawer: context[:drawer]), class: (store == s ? "is-on" : ""), data: { store: s.id } do %><%= s.name %> <span class="num"><%= all_open.where(store: s).count %></span><% end %>
+      <% end %>
+    </div>
+  </header>
+  <div class="s-list">
+    <% if groups.any? %>
+      <% groups.each do |name, items| %>
+        <div class="s-cat" data-cat="<%= name %>">
+          <div class="s-cat-h"><span class="label"><%= name %></span><span class="label" data-cat-count><%= items.size %></span></div>
+          <% items.each do |item| %><%= render "shopping/row", item: item, store: store, flash_id: flash_id %><% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="s-empty serif">All stocked up.<br><i>Nothing left to buy.</i></div>
+    <% end %>
+    <% if checked.any? %>
+      <div class="s-drawer<%= " is-open" if drawer %>">
+        <%= link_to shopping_path(store: store&.id, drawer: (drawer ? nil : 1)), class: "s-drawer-h", data: { drawer: true } do %>
+          <span><%= icon("check", 22) %> Got it <b class="num">(<%= checked.size %>)</b></span><span class="label"><%= drawer ? "Hide" : "Show" %></span>
+        <% end %>
+        <% if drawer %>
+          <div class="s-drawer-list">
+            <% checked.each do |g| %>
+              <%= button_to check_grocery_item_path(g), method: :delete, params: context, class: "s-got", form: { data: { turbo_stream: true } } do %><%= g.name %><span class="label">Add back</span><% end %>
+            <% end %>
+            <%= button_to "Clear #{checked.size} checked items", cleared_groceries_path, params: context, class: "btn btn--ghost s-clear", form: { data: { turbo_stream: true } } %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,57 @@
+<% content_for(:title, "Home · Settings") %>
+<div class="settings-head">
+  <div><p class="page-note"><%= link_to "← Settings", settings_path %></p><h1 class="serif">Home</h1></div>
+</div>
+<% if HomeAssistant.configured? %>
+  <p class="page-note">Home Assistant is connected. <%= button_to "Import from Home Assistant", import_settings_home_path, method: :post, class: "settings-btn", form: { data: { turbo: false }, class: "settings-inline" } %> maps every light, switch, lock and cover it knows that is not mapped yet.</p>
+<% else %>
+  <p class="page-note">Home Assistant is not connected, so these are demo devices. Connect it (Settings → Integrations), then import or map devices to its entities.</p>
+<% end %>
+
+<h2 class="serif settings-h2">Rooms <%= link_to "Add", new_settings_room_path, class: "settings-btn" %> <%= link_to "Add a device", new_settings_device_path, class: "settings-btn" %></h2>
+<% if @rooms.any? || @unplaced.any? %>
+  <ul>
+    <% @rooms.each do |room| %>
+      <%= render "settings/row", title: room.name, sub: "#{room.devices.size} devices", edit_path: edit_settings_room_path(room), delete_path: settings_room_path(room), move_path: move_settings_room_path(room) %>
+      <% room.devices.each do |device| %>
+        <%= render "settings/row", title: "· #{device.name}", sub: "#{device.type_label.downcase} · #{device.mapped? ? device.entity_id : 'demo'}", edit_path: edit_settings_device_path(device), delete_path: settings_device_path(device), move_path: move_settings_device_path(device) %>
+      <% end %>
+    <% end %>
+    <% @unplaced.each do |device| %>
+      <%= render "settings/row", title: device.name, sub: "no room · #{device.type_label.downcase} · #{device.mapped? ? device.entity_id : 'demo'}", edit_path: edit_settings_device_path(device), delete_path: settings_device_path(device), move_path: move_settings_device_path(device) %>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No rooms or devices yet.</p>
+<% end %>
+
+<h2 class="serif settings-h2">Scenes <%= link_to "Add", new_settings_scene_path, class: "settings-btn" %></h2>
+<% if @scenes.any? %>
+  <ul>
+    <% @scenes.each do |scene| %>
+      <%= render "settings/row", title: scene.name, sub: "#{scene.scene_settings.size} devices#{' · locks all doors' if scene.locks_all?}", edit_path: edit_settings_scene_path(scene), delete_path: settings_scene_path(scene), move_path: move_settings_scene_path(scene) %>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No scenes yet.</p>
+<% end %>
+
+<h2 class="serif settings-h2">Climate <%= link_to "Edit", edit_settings_climate_path, class: "settings-btn" %></h2>
+<p><%= @household.thermostat ? (@household.thermostat.entity_id.presence || "Demo thermostat") : "No thermostat" %></p>
+
+<h2 class="serif settings-h2">Media <%= link_to "Edit", edit_settings_media_player_path, class: "settings-btn" %></h2>
+<p><%= @household.media_player ? (@household.media_player.entity_id.presence || "Demo speaker") : "No speaker" %></p>
+
+<h2 class="serif settings-h2">Cameras <%= link_to "Add", new_settings_camera_path, class: "settings-btn" %></h2>
+<% if @household.cameras.any? %>
+  <ul>
+    <% @household.cameras.each do |camera| %>
+      <%= render "settings/row", title: camera.name, sub: camera.entity_id.presence || "demo", edit_path: edit_settings_camera_path(camera), delete_path: settings_camera_path(camera), move_path: move_settings_camera_path(camera) %>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No cameras.</p>
+<% end %>
+
+<h2 class="serif settings-h2">Start over</h2>
+<%= button_to "Clear the home (rooms, devices, scenes, climate, media, cameras)", settings_home_path, method: :delete, class: "settings-btn settings-btn--danger", form: { data: { turbo_confirm: "Clear every room, device, scene, the thermostat, the speaker and the cameras?" } } %>

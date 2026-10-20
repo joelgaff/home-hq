@@ -1,0 +1,16 @@
+<%# The "people" piece: the avatars (person nil) or one person's page, kid or adult. %>
+<% household = Current.household %>
+<% person = local_assigns[:person] %>
+<%= turbo_frame_tag "people", data: { person: person&.id } do %>
+  <% if person %>
+    <%= render(person.kid? ? "people/day" : "people/adult", person: person, now: Current.now) %>
+  <% else %>
+    <% people = household.people.to_a %>
+    <div class="people<%= " is-many" if people.size > 5 %>" style="--lanes:<%= people.size %>">
+      <% people.each do |p| %>
+        <%= link_to people_path(person: p.id), class: "pp", style: p.style, data: { turbo_frame: "people" } do %><%= avatar(p, 160) %><b><%= p.name %></b><% end %>
+      <% end %>
+      <div class="people-note label">Tap someone to see their day</div>
+    </div>
+  <% end %>
+<% end %>

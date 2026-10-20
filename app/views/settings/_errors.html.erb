@@ -1,0 +1,3 @@
+<% if record.errors.any? %>
+  <p class="page-flash page-flash--alert"><%= record.errors.full_messages.to_sentence %></p>
+<% end %>

@@ -1,0 +1,19 @@
+<% household = Current.household %>
+<% upcoming = household.events.in_mode(Current.calendar_mode).for_person(person).overlapping(now, now + 7.days).includes(attendees: :person).by_start.select { |e| e.ends_at > now } %>
+<div class="me-section me-schedule">
+  <div class="label">Your schedule · next 7 days</div>
+  <% if upcoming.any? %>
+    <% upcoming.each do |e| %>
+      <% day = ->(t) { t.to_date == now.to_date ? "Today" : (t.to_date == now.to_date + 1 ? "Tomorrow" : fmt_day_short(t)) } %>
+      <% last = e.ends_at - 1.day %>
+      <% when_text = if e.all_day? && e.span_days > 1 then "#{fmt_day_short(e.starts_at)}–#{fmt_day_short(last)}"
+                     elsif e.all_day? then day.(e.starts_at)
+                     else safe_join([ day.(e.starts_at), tag.br, fmt_time(e.starts_at) ]) end %>
+      <button class="me-ev<%= " is-family" if e.family? %>" data-ev="<%= e.id %>" style="<%= e.color_person.style %>">
+        <span class="me-ev-t"><%= when_text %></span><span class="me-ev-n"><%= e.title %></span>
+      </button>
+    <% end %>
+  <% else %>
+    <div class="me-none serif"><i>Nothing</i> in the next week</div>
+  <% end %>
+</div>

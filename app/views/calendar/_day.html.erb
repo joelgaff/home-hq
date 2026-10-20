@@ -1,0 +1,39 @@
+<%# Today mode: a column per person, family events across all of them, an all-day row. %>
+<% people = @household.people.to_a %>
+<% timed = @household.timed_events_on(date) %>
+<% family = timed.select(&:family?) %>
+<% all_day = @household.all_day_events_on(date) %>
+<% day_start = date.in_time_zone.beginning_of_day %>
+<div class="cal-day">
+  <% if all_day.any? %>
+    <div class="allday"><div class="gutter label">All day</div><div class="allday-grid" style="--lanes:<%= @household.people.size %>">
+      <% all_day.each do |e| %>
+        <% col = e.family? ? "1 / -1" : "#{(people.index(e.attending_people.first) || 0) + 1} / span 1" %>
+        <% cont = e.continues_before?(date) %>
+        <button class="ad<%= " ad--cont" if cont %>" data-ev="<%= e.id %>" style="grid-column:<%= col %>;<%= e.color_person.style %>"><%= icon("left", 16) if cont %><%= e.title %><% if e.span_days > 1 %> <small>Day <%= e.day_number_on(date) %> of <%= e.span_days %></small><% end %></button>
+      <% end %>
+    </div></div>
+  <% end %>
+  <div class="grid-scroll" data-calendar-target="scroll" data-action="scroll->calendar#scrolled">
+    <div class="grid" style="height:<%= grid_height %>px">
+      <%= render "calendar/hours" %>
+      <div class="lanes" style="--lanes:<%= @household.people.size %>">
+        <% people.each do |p| %>
+          <div class="lane" style="<%= p.style %>">
+            <%= render "calendar/blocks", events: timed.select { |e| !e.family? && e.attending_people.include?(p) }, day: date, now: now, lane: p %>
+          </div>
+        <% end %>
+      </div>
+      <div class="lane-fam">
+        <% family.each do |e| %>
+          <% top, h = grid_box(e, date) %>
+          <%= render "calendar/event_block", event: e, now: now, lane: nil, half: false, style: "top:#{px(top)};height:#{px(h)};left:2px;right:2px" %>
+        <% end %>
+      </div>
+      <% if date == now.to_date %><%= render "calendar/now_line", now: now, index: nil %><% end %>
+    </div>
+  </div>
+  <% if timed.empty? %>
+    <div class="cal-empty serif">Nothing on the calendar.<br><i>A rare, quiet day.</i></div>
+  <% end %>
+</div>

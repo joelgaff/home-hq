@@ -1,0 +1,3 @@
+/* Offline banner (ours): stays until the network is back */
+.banner--offline { background: var(--ink); color: #fff; }
+.banner--offline .banner-text span { opacity: .7; }

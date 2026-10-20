@@ -1,0 +1,43 @@
+<%# A kid's "My day" (plan: People view): rings, stars, today's chores, to-dos, schedule, the week. %>
+<% household = Current.household %>
+<% today = now.to_date %>
+<% chores = household.loaded_chores.select { |c| c.person_id == person.id && c.due_on?(today) }.sort_by(&:sort_key) %>
+<% events = (household.all_day_events_on(today, person: person).to_a + household.timed_events_on(today, person: person).to_a) %>
+<div class="my-day" data-person="<%= person.id %>" style="<%= person.style %>">
+  <header class="my-head">
+    <%= link_to people_path, class: "icon-btn my-back", data: { turbo_frame: "people" }, "aria-label": "Everyone" do %><%= icon("left", 24) %><span>Everyone</span><% end %>
+    <%= avatar(person, 56) %>
+    <div><div class="label"><%= fmt_day(now) %> · My day</div><h1 class="serif"><%= person.name %></h1></div>
+  </header>
+  <div class="my-grid">
+    <div class="my-col">
+      <%= render "people/rings", person: person, now: now %>
+      <div class="me-section my-chores">
+        <div class="label">My chores today</div>
+        <% if chores.any? %>
+          <% chores.each do |c| %><%= render "chores/row", chore: c, routine: c.routine %><% end %>
+        <% else %>
+          <div class="me-none serif"><i>Nothing</i> today</div>
+        <% end %>
+      </div>
+    </div>
+    <div class="my-col">
+      <%= render "people/todos", person: person %>
+      <div class="me-section my-schedule">
+        <div class="label">Today</div>
+        <% if events.any? %>
+          <% events.each do |e| %>
+            <button class="me-ev" data-ev="<%= e.id %>" style="<%= e.color_person.style %>">
+              <span class="me-ev-t"><%= e.all_day? ? "All day" : fmt_time(e.starts_at) %><% if e.travel? %><br><small>leave <%= fmt_time(e.leave_by, ampm: false) %></small><% end %></span><span class="me-ev-n"><%= e.title %></span>
+            </button>
+          <% end %>
+        <% else %>
+          <div class="me-none serif"><i>Nothing</i> on the calendar</div>
+        <% end %>
+      </div>
+      <div class="ch-week"><div class="label">This week</div><div class="ch-week-row">
+        <% person.week_strip.each do |letter, state| %><span class="is-<%= state %>"><i></i><%= letter %></span><% end %>
+      </div></div>
+    </div>
+  </div>
+</div>

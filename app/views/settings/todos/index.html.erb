@@ -1,0 +1,16 @@
+<% content_for(:title, "To-dos · Settings") %>
+<div class="settings-head">
+  <div><p class="page-note"><%= link_to "← Settings", settings_path %></p><h1 class="serif">To-dos</h1></div>
+  <%= link_to "Add a to-do", new_settings_todo_path, class: "btn btn--solid" %>
+</div>
+<p class="page-note">One-off things for a person or anyone: due on a day, at a time, or whenever; stars for a kid. Chores that repeat live under Chores.</p>
+<% if @todos.any? %>
+  <ul>
+    <% @todos.each do |t| %>
+      <% sub = [ t.person&.name || "Anyone", (t.timed? ? l(t.due_at.in_time_zone, format: :long) : (t.due_on ? l(t.due_on, format: :long) : "whenever")), ("#{t.stars}★" if t.stars.positive?), ("done" if t.done?) ].compact.join(" · ") %>
+      <%= render "settings/row", title: t.title, sub: sub, edit_path: edit_settings_todo_path(t), delete_path: settings_todo_path(t) %>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No to-dos yet.</p>
+<% end %>

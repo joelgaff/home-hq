@@ -1,0 +1,132 @@
+/* The port's own rules on top of Wes's stylesheets. Where his prototype used buttons with JS
+   handlers, the port uses links (Turbo Frame navigation) and forms (button_to); these keep
+   them looking the same. */
+
+/* Links where the prototype had buttons */
+a.icon-btn, a.btn, .seg a, a.wk-head, a.wk-more, a.mo-cell, a.s-drawer-h { color: inherit; text-decoration: none; }
+.seg a {
+  min-height: 56px; padding: 0 22px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 800; font-stretch: 75%; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ink-2); white-space: nowrap; text-align: center;
+}
+.seg a.is-on { background: var(--ink); color: var(--paper); }
+.seg a .num { font-size: 19px; opacity: .6; margin-left: 4px; }
+.cal-head .seg a { min-height: 46px; padding: 0 18px; font-size: 15px; }
+
+/* Forms around buttons (button_to) must not change the layout around them */
+form.button_to { display: contents; }
+.scene-form { flex: 1; display: flex; }
+.scene-form .scene { width: 100%; }
+.demo-grid form { display: contents; }
+
+/* Wes's dayView never closes `.lanes`, so his family blocks render inside the lanes (after the
+   64 px hour gutter). The port closes it; this keeps the family blocks where his are. */
+.lane-fam { left: 64px; }
+
+/* The thermostat's − and + must stay round: as flex items they shrank beside the setpoint
+   (59×84 on the frame). The setpoint gives way instead. */
+.th-btn { flex: none; }
+.th-set { min-width: 0; }
+.th-set .num { white-space: nowrap; font-size: 100px; }
+
+/* Night style "off" (per-screen setting): the screen goes dark, nothing on it until a tap wakes it. */
+.stage[data-night-style="off"] .night .nt-inner { visibility: hidden; }
+
+/* Chores with no routines yet (after a fresh start). */
+.ch-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; min-height: 60%; color: var(--ink-2); }
+.ch-empty h1 { margin: 0; font-weight: 400; font-size: 56px; color: var(--ink); }
+.ch-empty p { margin: 0; font-size: 20px; }
+
+
+/* The event sheet's "who is it for" chips are buttons now (plan: Calendars, the override). */
+.evs-who { align-items: flex-start; }
+.evs-people button.chip { font: inherit; border: 0; cursor: pointer; }
+.evs-people .chip:not(.is-on) { opacity: .45; }
+.evs-people .chip.is-on { opacity: 1; box-shadow: 0 0 0 2px rgb(var(--c-rgb)); }
+.evs-people .chip--ghost { opacity: 1; background: transparent; border: 2px solid var(--line); padding-left: 14px; }
+
+
+/* Directions: the QR code in the event sheet (plan: second gap review). */
+.evs-link { color: inherit; text-decoration: none; }
+.evs-directions { display: flex; flex-direction: column; gap: 18px; }
+.evs-qr { align-self: center; width: 220px; height: 220px; padding: 10px; background: #fff; border-radius: 16px; }
+.evs-qr svg { width: 100%; height: 100%; display: block; }
+.evs-back { font-weight: 700; color: var(--ink); text-decoration: none; }
+
+/* The Today chores card before any routine exists. */
+.h-chores .h-empty { margin-top: 14px; font-family: var(--serif); font-size: 22px; color: var(--ink-2); }
+
+
+/* The PIN pad (plan: gap review: unlocking needs an adult). */
+.pin-pad form { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.pin-field { width: 240px; height: 64px; border: 0; border-radius: 16px; background: var(--card); text-align: center; font: inherit; font-size: 36px; letter-spacing: .4em; }
+.pin-error { margin: 0; color: var(--alert); font-weight: 700; }
+.pin-keys { display: grid; grid-template-columns: repeat(3, 84px); gap: 12px; }
+.pin-key { height: 72px; border: 0; border-radius: 18px; background: var(--card); font: inherit; font-size: 30px; font-weight: 700; color: var(--ink); }
+.pin-key--go { background: var(--ink); color: var(--paper); }
+
+
+/* Lane counts follow the people (plan: milestone 8): --lanes is set by the views; past five lanes the
+   type steps down. The 3-day calendar keeps its own three-column classes. */
+.h-lanes { grid-template-columns: repeat(var(--lanes, 4), 1fr); }
+.ch-lanes { grid-template-columns: repeat(var(--lanes, 5), 1fr); }
+.people { grid-template-columns: repeat(var(--lanes, 4), 1fr); }
+.cal-day:not(.cal-3) .lanes-head { grid-template-columns: 64px repeat(var(--lanes, 4), 1fr); }
+.cal-day:not(.cal-3) .lanes { grid-template-columns: repeat(var(--lanes, 4), 1fr); }
+.cal-day:not(.cal-3) .allday-grid { grid-template-columns: repeat(var(--lanes, 4), 1fr); }
+.h-lanes.is-many .h-ev-n, .h-lanes.is-many .h-lane-head b { font-size: 14px; }
+.h-lanes.is-many .h-ev { padding: 6px 8px; }
+.ch-lanes.is-many .ch-text b { font-size: 14px; }
+.ch-lanes.is-many .ch-head b { font-size: 15px; }
+
+/* To-dos in the lanes and the Anyone lane (plan: People view). */
+.h-todo-form, .ch-todo-form { display: contents; }
+.h-todo { font: inherit; text-align: left; cursor: pointer; }
+.h-todo .h-ev-t { opacity: .8; }
+.h-todo.is-late .h-ev-t { color: var(--alert); font-weight: 800; }
+.h-todos { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+.h-todos .label { font-size: 11px; }
+.ch-todo { font: inherit; text-align: left; cursor: pointer; width: 100%; }
+.ch-todo.is-late small { color: var(--alert); }
+
+
+/* Editing one grocery item (plan: second review 2026-10-16). */
+.s-edit { flex: none; width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--mute); cursor: pointer; display: grid; place-items: center; }
+.s-edit:hover { background: var(--card); }
+.gi-form { display: flex; flex-direction: column; gap: 8px; }
+.gi-form label { display: block; margin-top: 8px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); }
+.gi-row > div > label { margin: 8px 0 8px; }
+.gi-form .page-input, .gi-form .page-select {
+  display: block; width: 100%; min-width: 0; height: 56px; padding: 0 16px; box-sizing: border-box;
+  border: 0; border-radius: 14px; background: #fff; color: var(--ink); outline: none;
+  font: inherit; font-size: 20px; font-weight: 600; box-shadow: inset 0 0 0 2px var(--line);
+}
+.gi-form .page-select { appearance: none; -webkit-appearance: none; padding-right: 40px; cursor: pointer;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; }
+.gi-form .page-input:focus, .gi-form .page-select:focus { box-shadow: inset 0 0 0 3px var(--ink); }
+.gi-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 110px; gap: 12px; }
+.gi-form .btn--solid { margin-top: 18px; }
+.gi-remove { margin-top: 12px; width: 100%; }
+
+/* Stale feeds (plan: Offline and stale data): a quiet red note, never a takeover. */
+.h-wx-stale, .cal-stale { color: var(--alert); }
+.h-wx-meta .h-wx-stale { display: block; font-size: 13px; }
+
+/* Wes's hero title clips at its .95 line-height (overflow: hidden, for the ellipsis), which cut off
+   descenders (the j, y and q of "Enjoy the quiet."). Clip sideways only, so the ellipsis stays. */
+.h-hero-title { overflow-x: clip; overflow-y: visible; }
+
+/* Shopping with more than two stores (Wes had two): the list column may shrink below its header's
+   width, so the side panel stays on screen; the store tabs take the calendar's compact size, drop
+   to their own row when they do not fit beside the title, and scroll sideways past a full row.
+   The phone has its own layout (phone.css). */
+@media (min-width: 701px) {
+  .shop { grid-template-columns: minmax(0, 1fr) 440px; }
+  .s-head { flex-wrap: wrap; row-gap: 10px; }
+  .s-count { white-space: nowrap; }
+  .s-stores { min-width: 0; flex: 0 1 auto; overflow-x: auto; scrollbar-width: none; padding: 3px; }
+  .s-stores::-webkit-scrollbar { display: none; }
+  .s-stores a { flex: none; min-height: 46px; padding: 0 16px; font-size: 15px; }
+}
+.s-trash-form { display: contents; }

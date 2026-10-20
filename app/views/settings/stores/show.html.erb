@@ -1,0 +1,8 @@
+<% content_for(:title, "#{@store.name} · Settings") %>
+<%= render "settings/header", title: @store.name, back: settings_stores_path %>
+<p class="page-note">Aisle order: the list groups items in this order at <%= @store.name %>.</p>
+<ul class="settings-list">
+  <% @aisle.each do |c| %>
+    <%= render "settings/row", title: c.name, move_path: move_settings_store_aisle_path(@store, c) %>
+  <% end %>
+</ul>

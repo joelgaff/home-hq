@@ -1,0 +1,18 @@
+<%# One toast at a time (ui-spec §0): slides in, leaves after `ms`; an Undo button submits the
+    undo (a DELETE) and the answer clears the toast. Locals: html (safe markup), icon, tone,
+    undo_path, ms. %>
+<% ms = local_assigns.fetch(:ms, 5000) %>
+<% tone = local_assigns[:tone] %>
+<% undo_path = local_assigns[:undo_path] %>
+<div class="toast<%= " toast--#{tone}" if tone %>" style="--ms:<%= ms %>ms" data-controller="toast" data-toast-ms-value="<%= ms %>">
+  <%= icon(local_assigns[:icon], 26) if local_assigns[:icon] %>
+  <span class="toast-msg"><%= html.html_safe %></span>
+  <% if undo_path %>
+    <%= button_to undo_path, method: local_assigns.fetch(:undo_method, :delete), params: local_assigns.fetch(:undo_params, {}), class: "toast-undo", form: { data: { turbo_stream: true } } do %>
+      <%= icon("undo", 22) %>Undo
+    <% end %>
+  <% elsif local_assigns[:undo] %>
+    <%# A client-side Undo: whoever showed the toast listens on this button. %>
+    <button class="toast-undo" data-toast-undo><%= icon("undo", 22) %>Undo</button>
+  <% end %>
+</div>

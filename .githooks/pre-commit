@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Pre-commit guard: refuse to commit staged changes that look like a secret (API keys, tokens,
+# private keys). The same scan runs over the whole history in bin/ci. gitleaks is pinned in
+# mise.toml; `mise install` puts it on the path.
+#
+# bin/setup enables this hook (with pre-push) via:  git config core.hooksPath .githooks
+# A false positive can be allowlisted in .gitleaks.toml, or skipped once with
+# `git commit --no-verify` (then fix the rule).
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks not found; run 'mise install'. Commit blocked." >&2
+  exit 1
+fi
+
+# Encrypted credentials are scanned as stored, not decrypted through the rails_credentials
+# textconv driver (same as the bin/ci step).
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=diff.rails_credentials.textconv GIT_CONFIG_VALUE_0=cat
+exec gitleaks git --pre-commit --staged --no-banner --redact --exit-code 1

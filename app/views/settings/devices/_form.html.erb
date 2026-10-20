@@ -1,0 +1,15 @@
+<%= form_with model: [ :settings, device ], class: "page-form settings-form" do |f| %>
+  <%= render "settings/errors", record: device %>
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "page-input", autofocus: true %>
+  <% if device.new_record? %>
+    <%= label_tag "device_kind", "Type" %>
+    <%= select_tag "device[kind]", options_for_select(Device::TYPE_LABELS.invert.to_a, params.dig(:device, :kind)), class: "page-select" %>
+  <% else %>
+    <p class="page-note"><%= device.type_label %></p>
+  <% end %>
+  <%= f.label :room_id, "Room" %>
+  <%= f.select :room_id, @household.rooms.map { |r| [ r.name, r.id ] }, { include_blank: "No room yet" }, class: "page-select" %>
+  <%= render "settings/entity_field", f: f, entities: @entities %>
+  <%= f.submit(device.new_record? ? "Add device" : "Save", class: "btn btn--solid") %>
+<% end %>

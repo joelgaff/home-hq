@@ -1,0 +1,4 @@
+<% content_for(:title, "Add a calendar · Settings") %>
+<p class="page-note"><%= link_to "← Calendars", settings_calendar_sources_path %></p>
+<h1 class="serif">Add a calendar</h1>
+<%= render "form", source: @source %>

@@ -1,0 +1,16 @@
+# Home Assistant beside the app (plan: Hosting, 2026-10-16), moved between machines with this
+# file and a Home Assistant backup. Host networking so it can find devices on the LAN; the app
+# reaches it at http://<this machine's LAN address>:8123 (home_assistant.url in the credentials).
+#   mkdir -p ~/home-assistant && cp ops/home-assistant/compose.yml ~/home-assistant/ && cd ~/home-assistant && docker compose up -d
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
+    privileged: false
+    environment:
+      TZ: ${TZ:-UTC}  # set TZ in a .env next to this file
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro

@@ -1,0 +1,10 @@
+<%# After a completion or its undo: the Chores view, the Today card, and the toast slot. %>
+<%= turbo_stream.replace "chores" do %>
+  <%= render "chores/chores", routine: @routine %>
+<% end %>
+<%= turbo_stream.replace "today-chores" do %>
+  <%= render "today/chores" %>
+<% end %>
+<%= turbo_stream.update "toasts" do %>
+  <%= render "toasts/toast", **@toast if @toast %>
+<% end %>

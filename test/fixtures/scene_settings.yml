@@ -1,0 +1,24 @@
+movie_pendants:
+  scene: movie
+  device: pendants
+  level: 0
+
+movie_lamp:
+  scene: movie
+  device: floor_lamp
+  level: 15
+
+movie_shade:
+  scene: movie
+  device: shade
+  level: 0
+
+goodnight_pendants:
+  scene: goodnight
+  device: pendants
+  level: 0
+
+goodnight_porch:
+  scene: goodnight
+  device: porch
+  level: 0

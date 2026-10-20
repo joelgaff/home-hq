@@ -1,0 +1,11 @@
+<% household = Current.household %>
+<div class="hc-rooms" id="control-rooms">
+  <% household.rooms.includes(devices: :deviceable).each do |room| %>
+    <section class="room">
+      <div class="room-h"><h3 class="serif"><%= room.name %></h3><%= render "control/room_count", room: room %></div>
+      <div class="tiles">
+        <% room.devices.each do |device| %><%= render "control/tile", device: device %><% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -1,0 +1,58 @@
+bananas:
+  household: primary
+  category: produce
+  store: grocer
+  name: Bananas
+  quantity: 1
+  note: Bunch, not too ripe
+
+avocados:
+  household: primary
+  category: produce
+  store: grocer
+  name: Avocados
+  quantity: 3
+
+bagels:
+  household: primary
+  category: bakery
+  store: costco
+  name: Bagels
+  quantity: 2
+  note: Everything
+
+milk:
+  household: primary
+  category: dairy
+  store: costco
+  name: Milk 2%
+  quantity: 2
+
+paper_towels:
+  household: primary
+  category: household_goods
+  store: costco
+  name: Paper towels
+  quantity: 1
+
+mystery:
+  household: primary
+  store: grocer
+  name: Birthday candles
+  quantity: 1
+
+lemons:
+  household: primary
+  category: produce
+  store: grocer
+  name: Lemons
+  quantity: 2
+  checked_at: 2026-10-14 09:00:00
+
+butter:
+  household: primary
+  category: dairy
+  store: grocer
+  name: Butter
+  quantity: 1
+  checked_at: 2026-10-14 09:05:00

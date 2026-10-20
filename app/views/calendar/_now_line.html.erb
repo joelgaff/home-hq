@@ -1,0 +1,5 @@
+<%# The red now-line (moved each minute by the calendar controller). `index` places it in one of
+    three day columns in 3-day mode. %>
+<% if now_in_grid?(now) %>
+  <div class="now-line<%= " now-line--#{index}" if index %>" style="top:<%= px(grid_y(now)) %>" data-calendar-target="nowLine"><span class="num"><%= fmt_time(now, ampm: false) %></span></div>
+<% end %>

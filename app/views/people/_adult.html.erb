@@ -1,0 +1,18 @@
+<%# An adult's page on the frame (plan: People view): the week ahead, to-dos, chores, what needs them. %>
+<div class="me-adult" data-person="<%= person.id %>" style="<%= person.style %>">
+  <header class="my-head">
+    <%= link_to people_path, class: "icon-btn my-back", data: { turbo_frame: "people" }, "aria-label": "Everyone" do %><%= icon("left", 24) %><span>Everyone</span><% end %>
+    <%= avatar(person, 56) %>
+    <div><div class="label"><%= fmt_day(now) %><%= " · #{person.status}" if person.status.present? %></div><h1 class="serif"><%= person.name %></h1></div>
+  </header>
+  <div class="my-grid">
+    <div class="my-col">
+      <%= render "people/needs", person: person, now: now %>
+      <%= render "people/schedule", person: person, now: now %>
+    </div>
+    <div class="my-col">
+      <%= render "people/todos", person: person %>
+      <%= render "people/chores_list", person: person %>
+    </div>
+  </div>
+</div>

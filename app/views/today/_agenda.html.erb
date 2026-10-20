@@ -1,0 +1,22 @@
+<%# Phone-only (the approved mockup): everyone's remaining timed events today in one list, in
+    place of the four person lanes. Refreshes on the hour like the lanes. %>
+<% now = Current.now %>
+<% list = @household.timed_events_on(now).select { |e| e.ends_at > now } %>
+<%= turbo_frame_tag "today-agenda", class: "h-agenda", data: { controller: "refresh", refresh_every_value: "hour", refresh_url_value: today_path(part: "agenda") } do %>
+  <div class="label">Rest of today</div>
+  <% if list.any? %>
+    <div class="h-ag-list">
+      <% list.each do |e| %>
+        <% person = e.color_person %>
+        <% current = e.starts_at <= now %>
+        <button class="h-ag<%= " is-family" if e.family? %><%= " is-now" if current %>" data-ev="<%= e.id %>" style="<%= person.style %>">
+          <%= avatar(person, 28) %>
+          <span class="h-ag-t"><%= current ? "Now" : fmt_time(e.starts_at, ampm: false) %></span>
+          <span class="h-ag-n"><%= e.title %></span>
+        </button>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="h-free serif"><i>Free</i> the rest of the day</div>
+  <% end %>
+<% end %>

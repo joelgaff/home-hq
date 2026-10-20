@@ -1,0 +1,36 @@
+<%# The demo drawer (ui-spec §1.9): time presets and calendar data modes are server-side (a
+    reload), modes / fast idle / alerts are client-side. Opens on a 700 ms hold of the rail clock
+    or the D key. %>
+<% demo_time = session[:demo_time] %>
+<% cal_mode = Current.calendar_mode || "normal" %>
+<div class="demo" id="demo" data-controller="demo" data-action="shell:open-demo@document->demo#open shell:close-demo@document->demo#close shell:toggle-demo@document->demo#toggle click->demo#backdrop">
+  <div class="demo-panel" data-demo-target="panel">
+    <div class="demo-head"><div><div class="label label--light">Prototype</div><h2 class="serif">Demo controls</h2></div><button class="demo-x" data-action="click->demo#close" aria-label="Close"><%= icon("x", 28) %></button></div>
+    <div class="demo-sec"><div class="label label--light">Time of day · now <span data-demo-target="now"><%= fmt_time(Current.now) %></span></div>
+      <%= form_with url: demo_path, method: :patch, data: { turbo: false }, class: "demo-grid" do %>
+        <% [ %w[7:10 7:10\ AM], %w[15:18 3:18\ PM], %w[19:45 7:45\ PM], %w[23:40 11:40\ PM], %w[real Real\ time] ].each do |value, label| %>
+          <button type="submit" name="time" value="<%= value %>" data-time="<%= value %>" class="<%= "is-on" if demo_time == value %>"><%= label %></button>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="demo-sec"><div class="label label--light">Modes</div><div class="demo-grid">
+      <button data-mode="ambient" data-action="click->demo#setMode">Ambient</button>
+      <button data-mode="night" data-action="click->demo#setMode">Night</button>
+      <button data-fastidle data-demo-target="fastIdle" data-action="click->demo#fastIdle">Idle: fast</button>
+    </div></div>
+    <div class="demo-sec"><div class="label label--light">Alerts</div><div class="demo-grid">
+      <button data-alert="doorbell" data-action="click->demo#alert">Doorbell</button>
+      <button data-alert="leak" data-action="click->demo#alert">Water leak</button>
+      <button data-alert="garage" data-action="click->demo#alert">Garage open</button>
+      <button data-alert="package" data-action="click->demo#alert">Package</button>
+    </div></div>
+    <div class="demo-sec"><div class="label label--light">Calendar data</div>
+      <%= form_with url: demo_path, method: :patch, data: { turbo: false }, class: "demo-grid" do %>
+        <% [ %w[normal Normal\ day], %w[empty Empty\ day], %w[busy Overloaded] ].each do |value, label| %>
+          <button type="submit" name="calendar" value="<%= value %>" data-cal="<%= value %>" class="<%= "is-on" if cal_mode == value %>"><%= label %></button>
+        <% end %>
+      <% end %>
+    </div>
+    <p class="demo-note">Keyboard: <b>D</b> demo · <b>A</b> ambient · <b>N</b> night · <b>1–7</b> views</p>
+  </div>
+</div>

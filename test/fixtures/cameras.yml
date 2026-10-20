@@ -1,0 +1,17 @@
+front:
+  household: primary
+  name: Front Porch
+  image_key: porch-steps
+  position: 1
+
+driveway:
+  household: primary
+  name: Driveway
+  image_key: driveway-maple
+  position: 2
+
+yard:
+  household: primary
+  name: Backyard
+  image_key: garden-yard
+  position: 3

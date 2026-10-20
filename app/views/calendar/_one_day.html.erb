@@ -1,0 +1,28 @@
+<%# Day mode on a phone (plan: Small screens): one column holding everyone's events, or one
+    person's with a chip picked; family events sit in the same column. %>
+<% timed = @household.timed_events_on(date, person: person).to_a %>
+<% all_day = @household.all_day_events_on(date, person: person).to_a %>
+<div class="cal-day cal-1">
+  <% if all_day.any? %>
+    <div class="allday"><div class="gutter label">All day</div><div class="allday-grid allday-grid--1">
+      <% all_day.each do |e| %>
+        <% cont = e.continues_before?(date) %>
+        <button class="ad<%= " ad--cont" if cont %>" data-ev="<%= e.id %>" style="<%= e.color_person.style %>"><%= icon("left", 16) if cont %><%= e.title %><% if e.span_days > 1 %> <small>Day <%= e.day_number_on(date) %> of <%= e.span_days %></small><% end %></button>
+      <% end %>
+    </div></div>
+  <% end %>
+  <div class="grid-scroll" data-calendar-target="scroll" data-action="scroll->calendar#scrolled">
+    <div class="grid" style="height:<%= grid_height %>px">
+      <%= render "calendar/hours" %>
+      <div class="lanes lanes--1">
+        <div class="lane<%= " is-today" if date == now.to_date %>">
+          <%= render "calendar/blocks", events: timed, day: date, now: now, lane: nil %>
+        </div>
+      </div>
+      <% if date == now.to_date %><%= render "calendar/now_line", now: now, index: nil %><% end %>
+    </div>
+  </div>
+  <% if timed.empty? %>
+    <div class="cal-empty serif">Nothing on the calendar.<br><i>A rare, quiet day.</i></div>
+  <% end %>
+</div>

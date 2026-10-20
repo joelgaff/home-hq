@@ -1,0 +1,19 @@
+<%# Directions (plan: second gap review, v1): the address and a QR code of the maps link, inside
+    the event sheet. %>
+<% e = @event %>
+<% person = e.color_person %>
+<%= turbo_frame_tag "sheet" do %>
+  <div class="sheet-body evs" data-sheet-class="sheet--event" style="<%= person.style %>">
+    <div class="evs-band">
+      <div class="label label--on"><%= fmt_rel(e.starts_at) %> · <%= fmt_month(e.starts_at) %> <%= e.starts_at.day %></div>
+      <h2 class="serif"><%= e.title %></h2>
+      <div class="evs-time num"><%= e.all_day? ? "All day" : fmt_range(e.starts_at, e.ends_at) %></div>
+    </div>
+    <div class="evs-body evs-directions">
+      <div class="evs-qr"><%= @qr_svg %></div>
+      <div class="evs-row"><%= icon("pin", 28) %><div><b><%= e.location %></b><span>Point a phone camera at the code to open directions. <%= link_to "Or open the map here", @maps_url, target: "_blank", rel: "noopener" %>.</span></div></div>
+      <% if e.travel? %><div class="evs-row evs-leave"><%= icon("car", 28) %><div><b>Leave by <%= fmt_time(e.leave_by) %></b><span><%= e.travel_minutes %> min drive in current traffic</span></div></div><% end %>
+      <p><%= link_to "← Back to the event", event_path(e), class: "evs-back" %></p>
+    </div>
+  </div>
+<% end %>

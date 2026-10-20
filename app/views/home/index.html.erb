@@ -1,0 +1,8 @@
+<h1>You're in 🎉</h1>
+<% if current_user %>
+  <p>Signed in as <%= current_user.email %>.</p>
+  <p><%= link_to "Screens", screens_path %></p>
+  <%= button_to "Sign out", session_path, method: :delete %>
+<% else %>
+  <p>Showing on <%= current_screen.name %>.</p>
+<% end %>

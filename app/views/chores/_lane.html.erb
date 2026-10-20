@@ -1,0 +1,39 @@
+<% list = @household.chores_for(routine, person: person) %>
+<% done = list.count(&:done?) %>
+<% all = list.any? && done == list.size %>
+<% style = (person || @household.family).style %>
+<section class="ch-lane<%= " is-complete" if all %><%= " is-kid" if person&.kid? %>" data-lane="<%= person ? person.id : "any" %>" style="<%= style %>">
+  <header class="ch-head">
+    <%= avatar(person || @household.family, 42) %>
+    <div>
+      <b><%= person ? person.name : "Anyone" %></b>
+      <% if person&.kid? %>
+        <span class="ch-stars"><%= icon("star", 18, "i--fill") %><span class="num"><%= person.stars %></span></span>
+      <% else %>
+        <span class="ch-sub"><%= person.nil? ? "Up for grabs" : (list.any? ? "#{done} of #{list.size}" : "Nothing") %></span>
+      <% end %>
+    </div>
+    <div class="ch-ring"><%= ring(done, [ list.size, 1 ].max, 46) %><span class="num"><%= all ? "✓" : (list.any? ? "#{done}/#{list.size}" : "–") %></span></div>
+  </header>
+  <div class="ch-list">
+    <% if list.any? %>
+      <% list.each do |chore| %><%= render "chores/row", chore: chore, routine: routine %><% end %>
+    <% else %>
+      <div class="ch-none serif"><i>Nothing this <%= routine.part_of_day %></i></div>
+    <% end %>
+    <% if all %><div class="ch-alldone serif">All done<i>!</i></div><% end %>
+    <% if person.nil? %>
+      <%# Anyone's to-dos sit with the Anyone chores (plan: People view). %>
+      <% @household.open_todos_for(nil).each do |t| %>
+        <%= button_to complete_todo_path(t), method: :patch, class: "ch ch-todo#{' is-late' if t.overdue?}", form: { data: { turbo_stream: true }, class: "ch-todo-form" } do %>
+          <span class="ch-emoji">☐</span><span class="ch-text"><b><%= t.title %></b><small><%= t.overdue? ? "Overdue" : "To do" %></small></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+  <% if person&.kid? %>
+    <div class="ch-week"><div class="label">This week</div><div class="ch-week-row">
+      <% person.week_strip.each do |letter, state| %><span class="is-<%= state %>"><i></i><%= letter %></span><% end %>
+    </div></div>
+  <% end %>
+</section>

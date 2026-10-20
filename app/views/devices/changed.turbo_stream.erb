@@ -1,0 +1,25 @@
+<%# Tiles live in the rooms and, while a sheet is open, in the sheet too: replace them by class. %>
+<% @devices.each do |device| %>
+  <%= turbo_stream.replace_all ".device-#{device.id}" do %>
+    <%= render "control/tile", device: device %>
+  <% end %>
+<% end %>
+<% @devices.filter_map(&:room).uniq.each do |room| %>
+  <%= turbo_stream.replace "room_#{room.id}_count" do %>
+    <%= render "control/room_count", room: room %>
+  <% end %>
+<% end %>
+<% if @scenes %>
+  <%= turbo_stream.replace "control-scenes" do %>
+    <%= render "control/scenes" %>
+  <% end %>
+<% end %>
+<%= turbo_stream.replace "control-sum" do %>
+  <%= render "control/summary" %>
+<% end %>
+<%= turbo_stream.replace "today-status" do %>
+  <%= render "today/status" %>
+<% end %>
+<%= turbo_stream.update "toasts" do %>
+  <%= render "toasts/toast", **@toast if @toast %>
+<% end %>

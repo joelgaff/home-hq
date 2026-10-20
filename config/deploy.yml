@@ -1,0 +1,121 @@
+# Kamal deploy configuration. Nothing household- or server-specific lives here: the server and
+# the public hostname come from the environment of the machine running `bin/kamal`:
+#
+#   HOME_DASHBOARD_SERVER   IP or hostname Kamal SSHes into (as root)
+#   HOME_DASHBOARD_DOMAIN   public hostname the frame and phones use (Let's Encrypt via kamal-proxy)
+#
+# Secrets (master key, R2 keys, Telegram) come from .env via .kamal/secrets (see the README).
+<% server = ENV.fetch("HOME_DASHBOARD_SERVER", "server.example.com") %>
+<% domain = ENV.fetch("HOME_DASHBOARD_DOMAIN", "dashboard.example.com") %>
+<%# Two shapes, one file (plan: Hosting, 2026-10-16): a VPS where kamal-proxy terminates TLS
+    itself, or a machine at home behind a Cloudflare Tunnel (HOME_DASHBOARD_TLS=false and a
+    CLOUDFLARE_TUNNEL_TOKEN), where the tunnel carries HTTPS and the proxy speaks plain HTTP. %>
+<% ssh_user = ENV.fetch("HOME_DASHBOARD_SSH_USER", "root") %>
+<% tls = ENV.fetch("HOME_DASHBOARD_TLS", "true") != "false" %>
+<% tunnel = ENV["CLOUDFLARE_TUNNEL_TOKEN"].to_s.strip != "" %>
+<%# The image registry runs on the deploying laptop. "localhost:5555" makes Kamal forward the port
+    to the server over SSH; when the server IS this machine the port is already taken, so it is
+    addressed as 127.0.0.1 instead (no forwarding, Docker trusts 127.0.0.0/8 as insecure). %>
+<% registry = server == "127.0.0.1" ? "127.0.0.1:5555" : "localhost:5555" %>
+
+service: home_dashboard
+image: home_dashboard
+
+servers:
+  web:
+    - <%= server %>
+  # The home bridge: one process holding the WebSocket to Home Assistant (idles until configured).
+  bridge:
+    hosts:
+      - <%= server %>
+    cmd: bin/rails home_assistant:listen
+
+# kamal-proxy terminates TLS with a Let's Encrypt certificate. The DNS record must be "DNS only"
+# (no Cloudflare proxy) so clients see this certificate: the frame then needs only ISRG Root X1.
+ssh:
+  user: <%= ssh_user %>
+proxy:
+  ssl: <%= tls %>
+  host: <%= domain %>
+  app_port: 80
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 30
+
+# Kamal's local registry: images are built here and pulled by the server over the SSH tunnel.
+registry:
+  server: <%= registry %>
+<% unless registry.start_with?("localhost") %>
+  # Kamal insists on credentials for a registry it does not call local; the loopback registry
+  # has no auth, so these are placeholders (KAMAL_REGISTRY_PASSWORD=local in .kamal/secrets).
+  username: local
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+<% end %>
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    # Alerts: empty until the bot exists (see .kamal/secrets), then the app posts to Telegram.
+    - TELEGRAM_BOT_TOKEN
+    - TELEGRAM_CHAT_ID
+    # The home hub and the photo library: empty until each exists (the app treats blank as off).
+    - HOME_ASSISTANT_URL
+    - HOME_ASSISTANT_TOKEN
+    - HOME_ASSISTANT_WEBHOOK_SECRET
+    - IMMICH_URL
+    - IMMICH_API_KEY
+  clear:
+    # Solid Queue runs inside Puma; one server, one process.
+    SOLID_QUEUE_IN_PUMA: true
+    HOME_DASHBOARD_DOMAIN: <%= domain %>
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+# SQLite databases and local uploads. Litestream (below) streams the primary database off-server.
+volumes:
+  - "home_dashboard_storage:/rails/storage"
+
+asset_path: /rails/public/assets
+
+builder:
+  arch: amd64
+<% unless registry.start_with?("localhost") %>
+  # Deploying to this machine: build with the host's Docker, which can reach the loopback registry
+  # (the buildx container cannot).
+  driver: docker
+<% end %>
+
+accessories:
+<% if tunnel %>
+  # The public address at home: cloudflared dials out to Cloudflare, which terminates TLS and
+  # forwards the hostname to kamal-proxy over the kamal Docker network (the tunnel's public
+  # hostname points at http://kamal-proxy:80). No open ports.
+  tunnel:
+    image: cloudflare/cloudflared:2026.10.0
+    host: <%= server %>
+    cmd: tunnel --no-autoupdate run
+    env:
+      secret:
+        - TUNNEL_TOKEN
+<% end %>
+  # Continuous SQLite backup to Cloudflare R2 (S3-compatible). Shares the app's storage volume.
+  litestream:
+    image: litestream/litestream:0.3
+    host: <%= server %>
+    cmd: replicate -config /etc/litestream.yml
+    files:
+      - config/litestream.yml:/etc/litestream.yml
+    volumes:
+      - "home_dashboard_storage:/rails/storage"
+    env:
+      secret:
+        - LITESTREAM_ACCESS_KEY_ID
+        - LITESTREAM_SECRET_ACCESS_KEY
+        - LITESTREAM_BUCKET
+        - LITESTREAM_ENDPOINT

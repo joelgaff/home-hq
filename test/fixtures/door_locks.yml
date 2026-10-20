@@ -1,0 +1,5 @@
+front_door:
+  locked: true
+
+side_door:
+  locked: true
