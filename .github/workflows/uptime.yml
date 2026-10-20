@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Restore the last state
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: .uptime-state
           key: uptime-state-${{ github.run_id }}
@@ -53,7 +53,7 @@ jobs:
           echo "$state" > .uptime-state
 
       - name: Remember the state
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: .uptime-state
           key: uptime-state-${{ github.run_id }}
