@@ -3,14 +3,14 @@
 # the step that moves the app to another machine (README: "Moving to another machine"). Run it
 # before the first deploy there, or again later with the app stopped (it replaces the database;
 # never run it while an app is writing to that volume). R2 settings come
-# from .env (bin/secrets-pull); the server from HOME_DASHBOARD_SERVER and HOME_DASHBOARD_SSH_USER.
+# from .env (bin/secrets-pull); the server from HOME_HQ_SERVER and HOME_HQ_SSH_USER.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 set -a; [ -f .env ] && . ./.env; set +a
-server="${HOME_DASHBOARD_SERVER:?set HOME_DASHBOARD_SERVER}"
-user="${HOME_DASHBOARD_SSH_USER:-root}"
+server="${HOME_HQ_SERVER:?set HOME_HQ_SERVER}"
+user="${HOME_HQ_SSH_USER:-root}"
 : "${LITESTREAM_BUCKET:?run bin/secrets-pull first}" "${LITESTREAM_ENDPOINT:?}" "${LITESTREAM_ACCESS_KEY_ID:?}" "${LITESTREAM_SECRET_ACCESS_KEY:?}"
-volume="home_dashboard_storage"
+volume="home_hq_storage"
 
 echo "restore-db: restoring production.sqlite3 from R2 into volume $volume on $server"
 scp -q config/litestream.yml "$user@$server:/tmp/litestream-restore.yml"

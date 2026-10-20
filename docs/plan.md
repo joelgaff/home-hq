@@ -165,7 +165,7 @@ uploaded, and Apple Photos has no web API, so neither can feed "on this day" dir
   anyway. The app is one image plus one replicated volume, so it moves between machines in an
   hour (`bin/restore-db`, README "Moving to another machine"). Interim host while the home box is
   set up: the owner's laptop. The VPS config stays valid as a fallback destination
-  (`HOME_DASHBOARD_TLS=true`, root over SSH). Until 2026-10-16 the app ran on the 8 GB Hetzner box.
+  (`HOME_HQ_TLS=true`, root over SSH). Until 2026-10-16 the app ran on the 8 GB Hetzner box.
 - **Logins:** rails-now magic-link auth (decided; passkeys deferred). Each screen signs in once as a named
   **screen device** with a long-lived session (no LAN allow-lists or IP trust).
 - **Frame:** points the kiosk at the public URL; needs the ISRG Root X1 certificate added once (we
@@ -615,7 +615,7 @@ One place where each person sees everything related to them.
 
 ### Second gap review (2026-10-14)
 **Foundation: generate with `~/Work/rails-now`** (owner's bootstrapper and conventions):
-- `rails-now home_dashboard Household ~/Work shared` → Rails 8, SQLite + Solid Queue/Cache/Cable,
+- `rails-now home_hq Household ~/Work shared` → Rails 8, SQLite + Solid Queue/Cache/Cable,
   **magic-link auth (email → 6-digit code, bcrypt digest, 10-min TTL; no passwords stored)**,
   Identity/User split, `Current.household` tenancy (shared: one household per install, which also
   suits open-source self-hosters), MailerSend SMTP in production, letter_opener in development, a

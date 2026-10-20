@@ -1,25 +1,25 @@
 # Kamal deploy configuration. Nothing household- or server-specific lives here: the server and
 # the public hostname come from the environment of the machine running `bin/kamal`:
 #
-#   HOME_DASHBOARD_SERVER   IP or hostname Kamal SSHes into (as root)
-#   HOME_DASHBOARD_DOMAIN   public hostname the frame and phones use (Let's Encrypt via kamal-proxy)
+#   HOME_HQ_SERVER   IP or hostname Kamal SSHes into (as root)
+#   HOME_HQ_DOMAIN   public hostname the frame and phones use (Let's Encrypt via kamal-proxy)
 #
 # Secrets (master key, R2 keys, Telegram) come from .env via .kamal/secrets (see the README).
-<% server = ENV.fetch("HOME_DASHBOARD_SERVER", "server.example.com") %>
-<% domain = ENV.fetch("HOME_DASHBOARD_DOMAIN", "dashboard.example.com") %>
+<% server = ENV.fetch("HOME_HQ_SERVER", "server.example.com") %>
+<% domain = ENV.fetch("HOME_HQ_DOMAIN", "dashboard.example.com") %>
 <%# Two shapes, one file (plan: Hosting, 2026-10-16): a VPS where kamal-proxy terminates TLS
-    itself, or a machine at home behind a Cloudflare Tunnel (HOME_DASHBOARD_TLS=false and a
+    itself, or a machine at home behind a Cloudflare Tunnel (HOME_HQ_TLS=false and a
     CLOUDFLARE_TUNNEL_TOKEN), where the tunnel carries HTTPS and the proxy speaks plain HTTP. %>
-<% ssh_user = ENV.fetch("HOME_DASHBOARD_SSH_USER", "root") %>
-<% tls = ENV.fetch("HOME_DASHBOARD_TLS", "true") != "false" %>
+<% ssh_user = ENV.fetch("HOME_HQ_SSH_USER", "root") %>
+<% tls = ENV.fetch("HOME_HQ_TLS", "true") != "false" %>
 <% tunnel = ENV["CLOUDFLARE_TUNNEL_TOKEN"].to_s.strip != "" %>
 <%# The image registry runs on the deploying laptop. "localhost:5555" makes Kamal forward the port
     to the server over SSH; when the server IS this machine the port is already taken, so it is
     addressed as 127.0.0.1 instead (no forwarding, Docker trusts 127.0.0.0/8 as insecure). %>
 <% registry = server == "127.0.0.1" ? "127.0.0.1:5555" : "localhost:5555" %>
 
-service: home_dashboard
-image: home_dashboard
+service: home_hq
+image: home_hq
 
 servers:
   web:
@@ -69,7 +69,7 @@ env:
   clear:
     # Solid Queue runs inside Puma; one server, one process.
     SOLID_QUEUE_IN_PUMA: true
-    HOME_DASHBOARD_DOMAIN: <%= domain %>
+    HOME_HQ_DOMAIN: <%= domain %>
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
@@ -79,7 +79,7 @@ aliases:
 
 # SQLite databases and local uploads. Litestream (below) streams the primary database off-server.
 volumes:
-  - "home_dashboard_storage:/rails/storage"
+  - "home_hq_storage:/rails/storage"
 
 asset_path: /rails/public/assets
 
@@ -112,7 +112,7 @@ accessories:
     files:
       - config/litestream.yml:/etc/litestream.yml
     volumes:
-      - "home_dashboard_storage:/rails/storage"
+      - "home_hq_storage:/rails/storage"
     env:
       secret:
         - LITESTREAM_ACCESS_KEY_ID

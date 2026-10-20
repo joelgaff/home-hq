@@ -6,7 +6,7 @@ require "yaml"
 # at home behind a Cloudflare Tunnel, chosen by environment variables so nothing machine-specific
 # is committed.
 class DeployConfigTest < ActiveSupport::TestCase
-  KEYS = %w[HOME_DASHBOARD_SERVER HOME_DASHBOARD_DOMAIN HOME_DASHBOARD_SSH_USER HOME_DASHBOARD_TLS CLOUDFLARE_TUNNEL_TOKEN].freeze
+  KEYS = %w[HOME_HQ_SERVER HOME_HQ_DOMAIN HOME_HQ_SSH_USER HOME_HQ_TLS CLOUDFLARE_TUNNEL_TOKEN].freeze
 
   def render(env)
     saved = KEYS.to_h { |k| [ k, ENV[k] ] }
@@ -18,7 +18,7 @@ class DeployConfigTest < ActiveSupport::TestCase
   end
 
   test "a VPS: root over SSH, the proxy terminates TLS, no tunnel" do
-    config = render("HOME_DASHBOARD_SERVER" => "203.0.113.10", "HOME_DASHBOARD_DOMAIN" => "dash.example.net")
+    config = render("HOME_HQ_SERVER" => "203.0.113.10", "HOME_HQ_DOMAIN" => "dash.example.net")
     assert_equal true, config["proxy"]["ssl"]
     assert_equal "dash.example.net", config["proxy"]["host"]
     assert_equal "root", config.dig("ssh", "user")
@@ -29,8 +29,8 @@ class DeployConfigTest < ActiveSupport::TestCase
   end
 
   test "at home: a user over SSH, plain HTTP behind the Cloudflare Tunnel accessory on the host network" do
-    config = render("HOME_DASHBOARD_SERVER" => "127.0.0.1", "HOME_DASHBOARD_DOMAIN" => "dash.example.net",
-      "HOME_DASHBOARD_SSH_USER" => "deploy", "HOME_DASHBOARD_TLS" => "false", "CLOUDFLARE_TUNNEL_TOKEN" => "t")
+    config = render("HOME_HQ_SERVER" => "127.0.0.1", "HOME_HQ_DOMAIN" => "dash.example.net",
+      "HOME_HQ_SSH_USER" => "deploy", "HOME_HQ_TLS" => "false", "CLOUDFLARE_TUNNEL_TOKEN" => "t")
     assert_equal false, config["proxy"]["ssl"]
     assert_equal "deploy", config.dig("ssh", "user")
     tunnel = config["accessories"]["tunnel"]
@@ -50,7 +50,7 @@ class DeployConfigTest < ActiveSupport::TestCase
   HUB = %w[HOME_ASSISTANT_URL HOME_ASSISTANT_TOKEN HOME_ASSISTANT_WEBHOOK_SECRET IMMICH_URL IMMICH_API_KEY].freeze
 
   test "the home hub and photo library settings reach the app from the secrets (empty = off)" do
-    config = render("HOME_DASHBOARD_SERVER" => "127.0.0.1")
+    config = render("HOME_HQ_SERVER" => "127.0.0.1")
     assert_empty HUB - config.dig("env", "secret"), "every hub setting is an app secret"
     secrets = File.read(Rails.root.join(".kamal/secrets"))
     HUB.each { |name| assert_match(/^#{name}=\$#{name}$/, secrets) }

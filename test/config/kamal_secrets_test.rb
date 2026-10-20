@@ -28,8 +28,8 @@ class KamalSecretsTest < ActiveSupport::TestCase
       env_file = File.join(dir, "env")
       File.write(env_file, REQUIRED.map { |name| "#{name}=value-of-#{name.downcase}" }.join("\n") + "\n")
       out, err, status = Open3.capture3(
-        { "HOME_DASHBOARD_ENV_FILE" => env_file, "KAMAL_SKIP_HOOKS" => "1",
-          "HOME_DASHBOARD_SERVER" => "203.0.113.10", "HOME_DASHBOARD_DOMAIN" => "dash.example.net" },
+        { "HOME_HQ_ENV_FILE" => env_file, "KAMAL_SKIP_HOOKS" => "1",
+          "HOME_HQ_SERVER" => "203.0.113.10", "HOME_HQ_DOMAIN" => "dash.example.net" },
         "bin/kamal", "secrets", "print", chdir: Rails.root.to_s)
       assert status.success?, err
       assert_includes out, "RAILS_MASTER_KEY=value-of-rails_master_key"
@@ -49,7 +49,7 @@ class KamalSecretsTest < ActiveSupport::TestCase
           {"id":"a","label":"master_key","value":"mk-123"},
           {"id":"b","label":"r2_access_key_id","value":"r2id"},
           {"id":"c","label":"r2_secret_access_key","value":"r2secret"},
-          {"id":"d","label":"r2_bucket","value":"home-dashboard"},
+          {"id":"d","label":"r2_bucket","value":"home-hq"},
           {"id":"e","label":"r2_endpoint","value":"https://x.r2.cloudflarestorage.com"},
           {"id":"f","label":"telegram_bot_token","value":"123:abc"},
           {"id":"g","label":"telegram_chat_id","value":"42"},
@@ -61,7 +61,7 @@ class KamalSecretsTest < ActiveSupport::TestCase
       env_file = File.join(dir, ".env")
 
       out, err, status = Open3.capture3(
-        { "PATH" => "#{fake_bin}:#{ENV["PATH"]}", "HOME_DASHBOARD_ENV_FILE" => env_file },
+        { "PATH" => "#{fake_bin}:#{ENV["PATH"]}", "HOME_HQ_ENV_FILE" => env_file },
         "bin/secrets-pull", chdir: Rails.root.to_s)
 
       assert status.success?, out + err

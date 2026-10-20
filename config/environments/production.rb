@@ -59,7 +59,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("HOME_DASHBOARD_DOMAIN", "localhost") }
+  config.action_mailer.default_url_options = { host: ENV.fetch("HOME_HQ_DOMAIN", "localhost") }
 
   # Login codes go out over MailerSend SMTP (credentials mailersend.username / .password / .from).
   config.action_mailer.delivery_method = :smtp
@@ -83,6 +83,6 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts = [ ENV["HOME_DASHBOARD_DOMAIN"] ].compact
+  config.hosts = [ ENV["HOME_HQ_DOMAIN"] ].compact
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

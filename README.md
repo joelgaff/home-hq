@@ -21,7 +21,7 @@ always looks current. It fills the first household only while it has no people (
 Set the household's time zone first so the demo day is built in it:
 
 ```sh
-HOME_DASHBOARD_TIME_ZONE=America/Los_Angeles bin/rails db:seed
+HOME_HQ_TIME_ZONE=America/Los_Angeles bin/rails db:seed
 ```
 
 Real household data is entered through the app from milestone 3 on; nothing in the seeds is ours.
@@ -160,10 +160,10 @@ Kamal, to one machine: a VPS with its own TLS, or a machine at home behind a Clo
 server-specific is committed:
 
 ```sh
-export HOME_DASHBOARD_SERVER=203.0.113.10          # the machine (SSH + Docker)
-export HOME_DASHBOARD_DOMAIN=dash.example.net      # the public hostname
-export HOME_DASHBOARD_SSH_USER=root                # the SSH user (root on a VPS, your user at home)
-export HOME_DASHBOARD_TLS=true                     # kamal-proxy gets its own certificate (a VPS)
+export HOME_HQ_SERVER=203.0.113.10          # the machine (SSH + Docker)
+export HOME_HQ_DOMAIN=dash.example.net      # the public hostname
+export HOME_HQ_SSH_USER=root                # the SSH user (root on a VPS, your user at home)
+export HOME_HQ_TLS=true                     # kamal-proxy gets its own certificate (a VPS)
 bin/kamal setup                                    # first time; bin/kamal deploy afterwards
 ```
 
@@ -171,7 +171,7 @@ bin/kamal setup                                    # first time; bin/kamal deplo
 app, Home Assistant and later Immich; the family keeps the public hostname, no VPN, no open
 ports): create a tunnel in Cloudflare Zero Trust, add the hostname as a public hostname pointing
 at `http://kamal-proxy:80`, put the tunnel token in the 1Password item (`cloudflare_tunnel_token`),
-then deploy with `HOME_DASHBOARD_TLS=false` and the token in `.env` (`bin/secrets-pull`). The
+then deploy with `HOME_HQ_TLS=false` and the token in `.env` (`bin/secrets-pull`). The
 `tunnel` accessory (cloudflared on the kamal Docker network) appears only when the token is set;
 Cloudflare terminates TLS and kamal-proxy speaks plain HTTP behind it. The machine needs sshd
 (Kamal deploys over SSH, even to itself) and your user in the `docker` group.
@@ -182,7 +182,7 @@ laptop:
 
 ```sh
 bin/kamal app stop && bin/kamal accessory stop litestream     # on the OLD machine's env: one writer at a time
-export HOME_DASHBOARD_SERVER=<new machine> HOME_DASHBOARD_SSH_USER=<user>
+export HOME_HQ_SERVER=<new machine> HOME_HQ_SSH_USER=<user>
 bin/restore-db                                                # R2 → the new machine's volume
 bin/kamal setup                                               # proxy, web, bridge, litestream (+ tunnel)
 ```
@@ -199,7 +199,7 @@ again after rotating a secret, from the 1Password item that is the source of tru
 bin/secrets-pull      # one `op` call: writes .env (mode 600) from the "Home HQ" item in vault "keys"
 ```
 
-Item and vault names are overridable with `HOME_DASHBOARD_OP_ITEM` / `HOME_DASHBOARD_OP_VAULT`;
+Item and vault names are overridable with `HOME_HQ_OP_ITEM` / `HOME_HQ_OP_VAULT`;
 the item's fields are listed in `bin/secrets-pull`. A new machine never copies `.env` from
 another one; it pulls its own. kamal-proxy gets the Let's Encrypt certificate on port 80/443;
 Litestream runs as an accessory and streams the SQLite database to R2.
@@ -213,11 +213,11 @@ one of them can be cut off later by deleting one line on the server.
 2. Give the machine its own deploy key and point SSH at it for the server only:
    ```sh
    ssh-keygen -t ed25519 -N "" -C "home-hq-deploy@$(hostname)" -f ~/.ssh/home-hq-deploy
-   printf '\nHost %s\n  User root\n  IdentityAgent none\n  IdentitiesOnly yes\n  IdentityFile ~/.ssh/home-hq-deploy\n' "$HOME_DASHBOARD_SERVER" >> ~/.ssh/config
+   printf '\nHost %s\n  User root\n  IdentityAgent none\n  IdentitiesOnly yes\n  IdentityFile ~/.ssh/home-hq-deploy\n' "$HOME_HQ_SERVER" >> ~/.ssh/config
    ```
 3. Allow that key on the server, authenticating with a key you already use there:
    ```sh
-   ssh root@$HOME_DASHBOARD_SERVER "cat >> ~/.ssh/authorized_keys" < ~/.ssh/home-hq-deploy.pub
+   ssh root@$HOME_HQ_SERVER "cat >> ~/.ssh/authorized_keys" < ~/.ssh/home-hq-deploy.pub
    ```
 4. Pull the secrets into `.env`: `bin/secrets-pull`. On a headless box without the 1Password
    app, sign the CLI in first with `op signin` (account password + secret key); the session is
