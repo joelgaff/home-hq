@@ -1,7 +1,7 @@
 # The outside uptime check. Not CI (that runs locally, bin/ci): every
 # 30 minutes GitHub asks the public /up from outside the home network and tells the Telegram chat
 # when the answer changes: once when the app goes down, once when it is back. The last state is
-# remembered in the Actions cache. Secrets: HOME_DASHBOARD_URL (https://…, no trailing slash),
+# remembered in the Actions cache. Secrets: HOME_HQ_URL (https://…, no trailing slash),
 # TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID.
 name: Uptime
 
@@ -31,12 +31,12 @@ jobs:
 
       - name: Ask /up (three tries) and tell the chat on a change
         env:
-          URL: ${{ secrets.HOME_DASHBOARD_URL }}
+          URL: ${{ secrets.HOME_HQ_URL }}
           BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           set -u
-          if [ -z "$URL" ]; then echo "::notice::HOME_DASHBOARD_URL is not set; nothing to check"; exit 0; fi
+          if [ -z "$URL" ]; then echo "::notice::HOME_HQ_URL is not set; nothing to check"; exit 0; fi
           state=up
           for i in 1 2 3; do
             if curl -fs --max-time 20 -o /dev/null "$URL/up"; then state=up; break; fi

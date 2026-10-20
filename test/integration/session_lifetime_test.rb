@@ -10,7 +10,7 @@ class SessionLifetimeTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
 
     cookie = response.headers["Set-Cookie"].to_s
-    assert_match(/_home_dashboard_session=/, cookie)
+    assert_match(/_home_hq_session=/, cookie)
     expires = Time.httpdate(cookie[/expires=([^;]+)/, 1])
     assert_in_delta 1.year.from_now.to_i, expires.to_i, 1.day.to_i
   end

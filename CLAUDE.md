@@ -1,11 +1,11 @@
-# home_dashboard — working notes for Claude Code
+# home_hq — working notes for Claude Code
 
 ## Stack (fixed)
 - Rails 8, **SQLite + Solid suite** (Queue/Cache/Cable). No Postgres/Redis/Sidekiq.
 - Hotwire (Turbo + Stimulus). Server-rendered, minimal JS.
 - Mail: **letter_opener** in dev, **MailerSend** (SMTP) in prod.
 - Deploy: **Kamal** to one machine, at home behind a **Cloudflare Tunnel** since 2026-10-16
-  (`config/deploy.yml` reads `HOME_DASHBOARD_SERVER`, `_DOMAIN`, `_SSH_USER`, `_TLS` and
+  (`config/deploy.yml` reads `HOME_HQ_SERVER`, `_DOMAIN`, `_SSH_USER`, `_TLS` and
   `CLOUDFLARE_TUNNEL_TOKEN` from ENV; the `tunnel` accessory exists only with the token; a VPS
   shape is the same file with `_TLS=true`). `bin/restore-db` moves the database between
   machines; `ops/home-assistant/compose.yml` runs the hub beside the app. See the README. DNS: Cloudflare. Storage: Active Storage → **Cloudflare R2**;

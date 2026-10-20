@@ -4,10 +4,10 @@
 # entered through the app from milestone 3 on; nothing here is ours.
 
 household = Household.first || Household.create!(name: "Demo household")
-# A fresh demo household takes its time zone from the environment (HOME_DASHBOARD_TIME_ZONE); the
+# A fresh demo household takes its time zone from the environment (HOME_HQ_TIME_ZONE); the
 # demo day is built in that zone.
-if household.people.none? && ENV["HOME_DASHBOARD_TIME_ZONE"].present?
-  household.update!(time_zone: ENV["HOME_DASHBOARD_TIME_ZONE"])
+if household.people.none? && ENV["HOME_HQ_TIME_ZONE"].present?
+  household.update!(time_zone: ENV["HOME_HQ_TIME_ZONE"])
 end
 
 if household.people.none?

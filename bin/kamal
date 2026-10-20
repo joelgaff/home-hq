@@ -16,6 +16,6 @@ require "bundler/setup"
 # Deploy secrets: .kamal/secrets references $VARIABLES; their values come from a gitignored .env
 # (filled by bin/secrets-pull). Variables already set in the shell win over the file.
 require "dotenv"
-Dotenv.load(ENV.fetch("HOME_DASHBOARD_ENV_FILE", File.expand_path("../.env", __dir__)))
+Dotenv.load(ENV.fetch("HOME_HQ_ENV_FILE", File.expand_path("../.env", __dir__)))
 
 load Gem.bin_path("kamal", "kamal")

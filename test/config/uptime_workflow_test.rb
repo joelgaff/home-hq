@@ -13,7 +13,7 @@ class UptimeWorkflowTest < ActiveSupport::TestCase
     assert triggers["schedule"].first["cron"].present?
     assert triggers.key?("workflow_dispatch")
     text = File.read(PATH)
-    %w[HOME_DASHBOARD_URL TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID].each { |name| assert_includes text, "secrets.#{name}" }
+    %w[HOME_HQ_URL TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID].each { |name| assert_includes text, "secrets.#{name}" }
     assert_no_match(/https?:\/\/(?!api\.telegram\.org)[a-z0-9.-]+\.[a-z]{2,}/i, text.gsub(/^\s*#.*$/, ""), "no address is committed")
   end
 
