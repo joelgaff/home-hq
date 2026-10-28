@@ -97,7 +97,7 @@ accessories:
   # forwards the hostname to kamal-proxy over the kamal Docker network (the tunnel's public
   # hostname points at http://kamal-proxy:80). No open ports.
   tunnel:
-    image: cloudflare/cloudflared:2026.10.0
+    image: cloudflare/cloudflared:2026.10.3
     host: <%= server %>
     cmd: tunnel --no-autoupdate run
     env:
